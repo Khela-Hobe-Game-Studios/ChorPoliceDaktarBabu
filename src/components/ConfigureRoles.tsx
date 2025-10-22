@@ -42,31 +42,31 @@ export function ConfigureRoles(props: ConfigureRolesProps) {
   };
 
   return (
-    <div style={{ border: '1px solid #ccc', padding: 12, borderRadius: 8, marginTop: 12 }}>
-      <h4>Configure Roles</h4>
+    <div className="configure-roles">
+      <h4 className="configure-roles-title">Configure Roles</h4>
       <RoleRow label="Chor 🦹‍♂️" value={roles.chor} onDec={() => setRole('chor', -1)} onInc={() => setRole('chor', +1)} />
       <RoleRow label="Daktar 💉" value={roles.daktar} onDec={() => setRole('daktar', -1)} onInc={() => setRole('daktar', +1)} />
       <RoleRow label="Police 👮" value={roles.police} onDec={() => setRole('police', -1)} onInc={() => setRole('police', +1)} />
-      <div style={{ marginTop: 8 }}>Babu 👤: {autoBabu} (auto)</div>
+      <div className="babu-info">Babu 👤: {autoBabu} (auto)</div>
 
-      <div style={{ marginTop: 8, color: '#a00' }}>
-        {roles.chor < 1 && <div>At least 1 Chor required.</div>}
+      <div className="validation-errors">
+        {roles.chor < 1 && <div className="validation-error">At least 1 Chor required.</div>}
         {roles.chor > Math.floor(totalPlayers * 0.4) && totalPlayers > 0 && (
-          <div>Warning: Chor exceed 40% of players.</div>
+          <div className="validation-error">Warning: Chor exceed 40% of players.</div>
         )}
         {autoBabu < 2 && totalPlayers >= 4 && (
-          <div>Warning: At least 2 Babu recommended.</div>
+          <div className="validation-error">Warning: At least 2 Babu recommended.</div>
         )}
         {(roles.chor + roles.daktar + roles.police + autoBabu) !== totalPlayers && (
-          <div>Total roles must equal total players.</div>
+          <div className="validation-error">Total roles must equal total players.</div>
         )}
       </div>
-      <button style={{ marginTop: 8 }} onClick={saveRoles}>Save Role Config</button>
-      <div style={{ marginTop: 8 }}>
-        <button disabled={!isConfigValid()} onClick={handleStartGame}>
+      <button className="btn save-roles-btn" onClick={saveRoles}>Save Role Config</button>
+      <div className="configure-controls">
+        <button className="btn start-game-btn" disabled={!isConfigValid()} onClick={handleStartGame}>
           Start Game
         </button>
-        <button style={{ marginLeft: 8 }} onClick={() => onRolesChange(getDefaultRolesByCount(totalPlayers))}>
+        <button className="btn reset-default-btn" onClick={() => onRolesChange(getDefaultRolesByCount(totalPlayers))}>
           Reset to Default
         </button>
       </div>

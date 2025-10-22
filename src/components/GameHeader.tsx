@@ -16,24 +16,24 @@ export function GameHeader(props: GameHeaderProps) {
   const { gameCode, phase, round, isHost, myRole, showRole, onToggleShowRole, onNextPhase, onResolveNight } = props;
 
   return (
-    <div style={{ position: 'sticky', top: 0, background: '#fff', paddingBottom: 8, zIndex: 10, borderBottom: '1px solid #eee' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap' }}>
-        <h3 style={{ margin: 0 }}>Game Code: {gameCode}</h3>
-        {phase && <div>Phase: <strong>{phase}</strong> · Round: <strong>{round}</strong></div>}
+    <div className="game-header">
+      <div className="game-header-content">
+        <h3 className="game-header-title">Game Code: {gameCode}</h3>
+        {phase && <div className="phase-info">Phase: <strong>{phase}</strong> · Round: <strong>{round}</strong></div>}
         {isHost && phase && (
-          <>
-            <button onClick={onNextPhase}>Next Phase</button>
+          <div className="host-controls">
+            <button className="btn" onClick={onNextPhase}>Next Phase</button>
             {phase === 'night' && (
-              <button style={{ marginLeft: 8 }} onClick={onResolveNight}>
+              <button className="btn resolve-night-btn" onClick={onResolveNight}>
                 Resolve Night
               </button>
             )}
-          </>
+          </div>
         )}
       </div>
       {!!myRole && (
-        <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <button onClick={onToggleShowRole}>
+        <div className="role-toggle-container">
+          <button className="btn" onClick={onToggleShowRole}>
             {showRole ? 'Hide My Role' : 'Show My Role'}
           </button>
           {showRole && <RoleBadge role={myRole} />}

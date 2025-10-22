@@ -14,8 +14,8 @@ export function Announcements(props: AnnouncementsProps) {
   }
 
   return (
-    <div style={{ border: '1px solid #eee', padding: 10, borderRadius: 8 }}>
-      <h4>Announcements</h4>
+    <div className="announcements">
+      <h4 className="announcements-title">Announcements</h4>
       {lastDeath && <div>Night: {players[lastDeath]?.name ?? lastDeath} was attacked { /* saved -> victim null handled in API */}</div>}
       {lastElimination && <div>Voting: {players[lastElimination]?.name ?? lastElimination} was eliminated.</div>}
       {lastInvestigation && lastInvestigation.policeId === playerId && (

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import './App.css'
+import './styles/components.scss'
 import { getOrCreatePlayerId } from './utils'
 import { createGame, joinGame, startGame, nextPhase } from './api/game'
 import { db } from './firebase'
@@ -96,10 +97,10 @@ function App() {
   }
 
   return (
-    <div style={{ maxWidth: 480, margin: '0 auto', padding: 16 }}>
+    <div className="app-container">
       <h2>Chor Police - Lobby</h2>
       {hasJoinedGame && (
-        <div style={{ marginBottom: 16, fontSize: 18, fontWeight: 600, color: '#2563eb' }}>
+        <div className="game-code-display">
           Game Code: {gameCode}
         </div>
       )}

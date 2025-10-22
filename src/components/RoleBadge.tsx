@@ -4,16 +4,13 @@ interface RoleBadgeProps {
 
 export function RoleBadge(props: RoleBadgeProps) {
   const { role } = props;
-  const color = role === 'chor' ? '#e11d48' : role === 'daktar' ? '#16a34a' : role === 'police' ? '#2563eb' : '#6b7280';
   const label = role === 'chor' ? 'Chor 🦹‍♂️' : role === 'daktar' ? 'Daktar 💉' : role === 'police' ? 'Police 👮' : 'Babu 👤';
+  const roleClass = role === 'chor' ? 'role-badge--chor' : 
+                   role === 'daktar' ? 'role-badge--daktar' : 
+                   role === 'police' ? 'role-badge--police' : 
+                   'role-badge--babu';
+  
   return (
-    <span style={{
-      display: 'inline-block',
-      padding: '6px 10px',
-      borderRadius: 8,
-      background: color,
-      color: '#fff',
-      fontWeight: 600,
-    }}>{label}</span>
+    <span className={`role-badge ${roleClass}`}>{label}</span>
   );
 }

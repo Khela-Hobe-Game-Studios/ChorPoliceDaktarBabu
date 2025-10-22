@@ -1,0 +1,344 @@
+// Main App Layout
+.app-container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.game-code-display {
+  margin-bottom: 16px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2563eb;
+}
+
+// Create Game Bar
+.create-game-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.create-game-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.game-code-input {
+  width: 120px;
+}
+
+// Game Header
+.game-header {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  padding-bottom: 8px;
+  z-index: 10;
+  border-bottom: 1px solid #eee;
+}
+
+.game-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.game-header-title {
+  margin: 0;
+}
+
+.phase-info {
+  // Phase and round display styles
+}
+
+.host-controls {
+  // Host-specific controls
+}
+
+.resolve-night-btn {
+  margin-left: 8px;
+}
+
+.role-toggle-container {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+// Player List
+.player-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.player-item {
+  // Individual player item styles
+}
+
+.dead-player {
+  // Styles for dead players
+}
+
+// Announcements
+.announcements {
+  border: 1px solid #eee;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.announcements-title {
+  margin: 0 0 8px 0;
+}
+
+// Voting Component
+.voting-container {
+  border: 1px solid #ccc;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 12px;
+}
+
+.voting-title {
+  margin: 0 0 8px 0;
+}
+
+.voting-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.vote-select {
+  // Vote selection dropdown
+}
+
+.submit-vote-btn {
+  margin-left: 8px;
+}
+
+.finalize-btn {
+  margin-left: 8px;
+}
+
+// Night Actions
+.night-actions-container {
+  border: 1px solid #ccc;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 12px;
+}
+
+.night-actions-title {
+  margin: 0 0 8px 0;
+}
+
+.night-actions-label {
+  margin-bottom: 8px;
+}
+
+.night-actions-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.night-select {
+  // Night action selection dropdown
+}
+
+.confirm-btn {
+  margin-left: 8px;
+}
+
+.no-action-message {
+  margin-top: 12px;
+  opacity: 0.8;
+}
+
+// Role Badge
+.role-badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 600;
+}
+
+.role-badge--chor {
+  background: #e11d48;
+}
+
+.role-badge--daktar {
+  background: #16a34a;
+}
+
+.role-badge--police {
+  background: #2563eb;
+}
+
+.role-badge--babu {
+  background: #6b7280;
+}
+
+// Role Row (Configure Roles)
+.role-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.role-row-label {
+  font-weight: 600;
+}
+
+.role-row-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.role-row-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+  
+  &:hover {
+    background: #f5f5f5;
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.role-row-count {
+  min-width: 28px;
+  text-align: center;
+  font-weight: 600;
+}
+
+// Configure Roles
+.configure-roles {
+  border: 1px solid #ccc;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 12px;
+}
+
+.configure-roles-title {
+  margin: 0 0 12px 0;
+}
+
+.babu-info {
+  margin-top: 8px;
+}
+
+.validation-errors {
+  margin-top: 8px;
+  color: #a00;
+}
+
+.validation-error {
+  margin-bottom: 4px;
+}
+
+.configure-controls {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+.save-roles-btn {
+  margin-top: 8px;
+}
+
+.start-game-btn {
+  // Start game button styles
+}
+
+.reset-default-btn {
+  margin-left: 8px;
+}
+
+// Utility classes
+.btn {
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  
+  &:hover {
+    background: #f5f5f5;
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.input {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  
+  &:focus {
+    outline: none;
+    border-color: #2563eb;
+  }
+}
+
+.select {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 14px;
+  
+  &:focus {
+    outline: none;
+    border-color: #2563eb;
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// Additional specific styles
+.host-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.phase-info {
+  font-weight: 500;
+}
+
+.dead-player {
+  opacity: 0.6;
+  text-decoration: line-through;
+}

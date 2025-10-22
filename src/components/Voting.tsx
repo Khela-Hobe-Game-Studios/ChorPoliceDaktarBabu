@@ -14,25 +14,27 @@ export function Voting(props: VotingProps) {
   const others = Object.fromEntries(Object.entries(livingPlayers).filter(([id]) => id !== playerId));
   
   return (
-    <div style={{ border: '1px solid #ccc', padding: 12, borderRadius: 8, marginTop: 12 }}>
-      <h4>Voting</h4>
-      <select value={target} onChange={(e) => setTarget(e.target.value)} disabled={!canVote}>
-        <option value="">-- Vote for --</option>
-        {Object.entries(others).filter(([, p]) => p.alive !== false).map(([id, p]) => (
-          <option key={id} value={id}>{p.name}</option>
-        ))}
-      </select>
-      <button style={{ marginLeft: 8 }} disabled={!target || !canVote} onClick={async () => {
-        const { setVote } = await import('../api/game');
-        await setVote(gameCode, playerId, target);
-        alert('Vote submitted');
-      }}>Submit Vote</button>
-      {isHost && (
-        <button style={{ marginLeft: 8 }} onClick={async () => {
-          const { finalizeVote } = await import('../api/game');
-          await finalizeVote(gameCode);
-        }}>Finalize</button>
-      )}
+    <div className="voting-container">
+      <h4 className="voting-title">Voting</h4>
+      <div className="voting-controls">
+        <select className="select" value={target} onChange={(e) => setTarget(e.target.value)} disabled={!canVote}>
+          <option value="">-- Vote for --</option>
+          {Object.entries(others).filter(([, p]) => p.alive !== false).map(([id, p]) => (
+            <option key={id} value={id}>{p.name}</option>
+          ))}
+        </select>
+        <button className="btn submit-vote-btn" disabled={!target || !canVote} onClick={async () => {
+          const { setVote } = await import('../api/game');
+          await setVote(gameCode, playerId, target);
+          alert('Vote submitted');
+        }}>Submit Vote</button>
+        {isHost && (
+          <button className="btn finalize-btn" onClick={async () => {
+            const { finalizeVote } = await import('../api/game');
+            await finalizeVote(gameCode);
+          }}>Finalize</button>
+        )}
+      </div>
     </div>
   );
 }
