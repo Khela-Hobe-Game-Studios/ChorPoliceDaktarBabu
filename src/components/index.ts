@@ -7,3 +7,5 @@ export { GameHeader } from './GameHeader';
 export { Announcements } from './Announcements';
 export { PlayerList } from './PlayerList';
 export { CreateGameBar } from './CreateGameBar';
+export { RoleDisplay } from './RoleDisplay';
+export { ThemeSelector } from './ThemeSelector';

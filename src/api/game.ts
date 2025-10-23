@@ -40,14 +40,26 @@ export async function joinGame(gameCode: string, playerId: string, name: string)
   const gameSnap = await get(child(ref(db), `games/${gameCode}`));
   if (!gameSnap.exists()) throw new Error("Game not found");
 
-  const playerRef = ref(db, `games/${gameCode}/players/${playerId}`);
-  await set(playerRef, {
+  // Get current players to verify we're not overwriting
+  const playersSnap = await get(child(ref(db), `games/${gameCode}/players`));
+  const currentPlayers = playersSnap.val() as Record<string, any> || {};
+  console.log('Current players before join:', Object.keys(currentPlayers));
+
+  // Use update to ensure we're adding to existing players, not replacing
+  const updates: Record<string, unknown> = {};
+  updates[`games/${gameCode}/players/${playerId}`] = {
     name,
     role: "",
     alive: true,
     action: null,
     vote: null,
-  });
+  };
+  await update(ref(db), updates);
+  
+  // Verify the update worked
+  const updatedPlayersSnap = await get(child(ref(db), `games/${gameCode}/players`));
+  const updatedPlayers = updatedPlayersSnap.val() as Record<string, any> || {};
+  console.log('Players after join:', Object.keys(updatedPlayers));
 }
 
 export async function updateRoleConfig(gameCode: string, roleConfig: RoleConfig): Promise<void> {
@@ -241,6 +253,37 @@ export function checkWinCondition(players: Record<string, PlayerState>): 'chor' 
   if (livingChor <= 0) return 'village'
   if (livingChor >= livingNonChor) return 'chor'
   return null
+}
+
+export async function restartGame(gameCode: string): Promise<void> {
+  const gameRef = ref(db, `games/${gameCode}`);
+  const gameSnap = await get(gameRef);
+  if (!gameSnap.exists()) throw new Error("Game not found");
+
+  const gameData = gameSnap.val();
+  const players = gameData.players || {};
+  
+  // Reset all players to alive and clear their roles
+  const resetPlayers: Record<string, any> = {};
+  Object.keys(players).forEach(playerId => {
+    resetPlayers[`players/${playerId}/alive`] = true;
+    resetPlayers[`players/${playerId}/role`] = "";
+    resetPlayers[`players/${playerId}/action`] = null;
+    resetPlayers[`players/${playerId}/vote`] = null;
+  });
+
+  // Reset game state
+  const updates = {
+    ...resetPlayers,
+    phase: null,
+    round: 0,
+    results: null,
+    gameEnded: false,
+    winner: null,
+    announcements: null
+  };
+
+  await update(gameRef, updates);
 }
 
 

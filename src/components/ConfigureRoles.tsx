@@ -1,18 +1,15 @@
 import { RoleRow } from './RoleRow';
 import { getDefaultRolesByCount } from '../utils';
-import { updateRoleConfig } from '../api/game';
 
 interface ConfigureRolesProps {
   roles: { chor: number; daktar: number; police: number; babu: number };
   totalPlayers: number;
-  gameCode: string;
-  onRoleChange: (key: 'chor' | 'daktar' | 'police', delta: number) => void;
   onRolesChange: (roles: { chor: number; daktar: number; police: number; babu: number }) => void;
   onStartGame: () => void;
 }
 
 export function ConfigureRoles(props: ConfigureRolesProps) {
-  const { roles, totalPlayers, gameCode, onRoleChange, onRolesChange, onStartGame } = props;
+  const { roles, totalPlayers, onRolesChange, onStartGame } = props;
   
   const autoBabu = Math.max(0, totalPlayers - (roles.chor + roles.daktar + roles.police));
 
@@ -24,9 +21,6 @@ export function ConfigureRoles(props: ConfigureRolesProps) {
     onRolesChange(next);
   };
 
-  const saveRoles = async () => {
-    await updateRoleConfig(gameCode, { ...roles, babu: autoBabu });
-  };
 
   const isConfigValid = () => {
     if (!totalPlayers) return false;
@@ -37,7 +31,6 @@ export function ConfigureRoles(props: ConfigureRolesProps) {
 
   const handleStartGame = async () => {
     if (!isConfigValid()) return;
-    await saveRoles();
     onStartGame();
   };
 
@@ -61,7 +54,6 @@ export function ConfigureRoles(props: ConfigureRolesProps) {
           <div className="validation-error">Total roles must equal total players.</div>
         )}
       </div>
-      <button className="btn save-roles-btn" onClick={saveRoles}>Save Role Config</button>
       <div className="configure-controls">
         <button className="btn start-game-btn" disabled={!isConfigValid()} onClick={handleStartGame}>
           Start Game

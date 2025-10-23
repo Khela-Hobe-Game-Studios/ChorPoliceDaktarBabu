@@ -1,344 +1,987 @@
-// Main App Layout
+// Import clean, modern fonts
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+// Dynamic Theme System - Uses CSS Custom Properties
+:root {
+  --primary-color: #6b73ff;
+  --secondary-color: #ff9a9e;
+  --tertiary-color: #ff6b6b;
+  --background-color: #f8f9ff;
+  --text-color: #4a5568;
+  --border-color: #6b73ff;
+}
+
+// SCSS variables for fallback and compatibility
+$primary-color: var(--primary-color);
+$secondary-color: var(--secondary-color);
+$tertiary-color: var(--tertiary-color);
+$background-color: var(--background-color);
+$text-color: var(--text-color);
+$border-color: var(--border-color);
+
+// Base styles with rickshaw art inspiration
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: $background-color;
+  color: $text-color;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+// Main App Container - Dynamic Theme
 .app-container {
   max-width: 480px;
-  margin: 0 auto;
-  padding: 16px;
+  margin: 20px auto;
+  padding: 25px;
+  background: $background-color;
+  border-radius: 20px;
+  border: 4px solid $primary-color;
+  box-shadow: 0 10px 30px rgba(107, 115, 255, 0.2);
+  position: relative;
+  
+}
+
+// Decorative border pattern
+.app-container h2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 25px;
+  color: $primary-color;
 }
 
 .game-code-display {
-  margin-bottom: 16px;
-  font-size: 18px;
-  font-weight: 600;
-  color: #2563eb;
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 700;
+  color: $background-color;
+  text-align: center;
+  background: $primary-color;
+  padding: 15px;
+  border-radius: 15px;
+  border: 4px solid $secondary-color;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-// Create Game Bar
+.player-name-main {
+  font-size: 20px;
+  font-weight: 700;
+  color: $background-color;
+  margin-bottom: 8px;
+  
+  .eliminated-status {
+    color: $tertiary-color;
+    font-weight: 600;
+    font-style: italic;
+  }
+}
+
+.game-code-subheader {
+  font-size: 16px;
+  font-weight: 500;
+  color: $background-color;
+  opacity: 0.9;
+}
+
+// Create Game Bar - Rickshaw style
 .create-game-container {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 15px;
+  padding: 20px;
+  background: $secondary-color;
+  border-radius: 15px;
+  border: 4px solid $primary-color;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  position: relative;
+  
 }
 
 .create-game-controls {
   display: flex;
-  gap: 8px;
+  gap: 10px;
+  flex-wrap: nowrap;
+  align-items: center;
 }
 
 .game-code-input {
-  width: 120px;
+  width: 140px;
+  background: $background-color;
+  border: 3px solid $primary-color;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-weight: 600;
+  color: $text-color;
+  font-family: 'Inter', sans-serif;
+  
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px $secondary-color;
+  }
 }
 
-// Game Header
+// Game Header - Traditional rickshaw style
 .game-header {
   position: sticky;
   top: 0;
-  background: #fff;
-  padding-bottom: 8px;
+  background: $secondary-color;
+  padding: 20px;
   z-index: 10;
-  border-bottom: 1px solid #eee;
+  border-radius: 15px;
+  border: 4px solid $primary-color;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  margin-bottom: 15px;
+  position: relative;
+  
 }
 
 .game-header-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
 .game-header-title {
   margin: 0;
+  color: $text-color;
+  font-family: 'Poppins', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
 }
 
 .phase-info {
-  // Phase and round display styles
+  color: $text-color;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
 }
 
 .host-controls {
-  // Host-specific controls
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
 .resolve-night-btn {
   margin-left: 8px;
+  font-size: 12px;
+  padding: 10px 14px;
 }
 
 .role-toggle-container {
-  margin-top: 8px;
+  margin-top: 15px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
-// Player List
+// Player List - Rickshaw art style
 .player-list {
   list-style: none;
   padding: 0;
   margin: 0;
+  background: $background-color;
+  border-radius: 15px;
+  padding: 20px;
+  border: 4px solid $secondary-color;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .player-item {
-  // Individual player item styles
+  padding: 12px 20px;
+  margin: 8px 0;
+  background: $secondary-color;
+  border-radius: 10px;
+  font-weight: 600;
+  color: $text-color;
+  border: 3px solid $primary-color;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+  
+  &::before {
+    content: '👤';
+    margin-right: 8px;
+  }
+  
+  &.police-identified-chor::before {
+    content: '';
+  }
+  
+  &:hover {
+    background: $secondary-color;
+    color: $text-color;
+    transform: translateX(5px);
+  }
 }
 
 .dead-player {
-  // Styles for dead players
+  opacity: 0.7;
+  text-decoration: line-through;
+  background: $background-color;
+  color: $primary-color;
+  
+  &::before {
+    content: '💀';
+  }
 }
 
-// Announcements
+// Announcements - Clean style
 .announcements {
-  border: 1px solid #eee;
-  padding: 10px;
-  border-radius: 8px;
+  border: 4px solid $primary-color;
+  padding: 20px;
+  border-radius: 15px;
+  background: $background-color;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  margin: 15px 0;
+  position: relative;
+  
+  &::before {
+    content: '📢';
+    position: absolute;
+    top: -15px;
+    left: 20px;
+    font-size: 20px;
+    background: $primary-color;
+    color: $background-color;
+    padding: 8px;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 .announcements-title {
-  margin: 0 0 8px 0;
+  margin: 0 0 15px 0;
+  color: $text-color;
+  font-family: 'Poppins', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
 }
 
-// Voting Component
+// Voting Component - Rickshaw style
 .voting-container {
-  border: 1px solid #ccc;
-  padding: 12px;
-  border-radius: 8px;
-  margin-top: 12px;
+  border: 4px solid $primary-color;
+  padding: 20px;
+  border-radius: 15px;
+  margin-top: 15px;
+  background: $background-color;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  position: relative;
+  
+  &:has(.finalize-btn) {
+    margin-top: 0;
+  }
+  
+  .finalize-btn {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 60px;
+    font-size: 18px;
+    font-weight: 700;
+    border: 4px solid $primary-color;
+    border-radius: 15px;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box;
+  }
+  
+  &:has(.finalize-btn) {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
 }
 
 .voting-title {
-  margin: 0 0 8px 0;
+  margin: 0 0 15px 0;
+  color: $primary-color;
+  font-family: 'Poppins', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
 }
 
 .voting-controls {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
 }
 
 .vote-select {
-  // Vote selection dropdown
+  background: $background-color;
+  border: 3px solid $primary-color;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-weight: 600;
+  color: $text-color;
+  font-family: 'Inter', sans-serif;
+  
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px $secondary-color;
+  }
 }
 
 .submit-vote-btn {
   margin-left: 8px;
+  font-size: 12px;
+  padding: 10px 14px;
 }
 
 .finalize-btn {
   margin-left: 8px;
+  font-size: 12px;
+  padding: 10px 14px;
 }
 
-// Night Actions
+// Night Actions - Rickshaw style
 .night-actions-container {
-  border: 1px solid #ccc;
-  padding: 12px;
-  border-radius: 8px;
-  margin-top: 12px;
+  border: 4px solid $primary-color;
+  padding: 20px;
+  border-radius: 15px;
+  margin-top: 15px;
+  background: $background-color;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  position: relative;
+  
+  &::before {
+    content: '🌙';
+    position: absolute;
+    top: -15px;
+    left: 20px;
+    font-size: 20px;
+    background: $primary-color;
+    color: $text-color;
+    padding: 8px;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 .night-actions-title {
-  margin: 0 0 8px 0;
+  margin: 0 0 15px 0;
+  color: $primary-color;
+  font-family: 'Poppins', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
 }
 
 .night-actions-label {
-  margin-bottom: 8px;
+  margin-bottom: 15px;
+  color: $text-color;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
 }
 
 .night-actions-controls {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
+  flex-wrap: nowrap;
 }
 
 .night-select {
-  // Night action selection dropdown
+  background: $background-color;
+  border: 3px solid $primary-color;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-weight: 600;
+  color: $text-color;
+  font-family: 'Inter', sans-serif;
+  
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px $secondary-color;
+  }
 }
 
 .confirm-btn {
   margin-left: 8px;
+  font-size: 12px;
+  padding: 10px 14px;
 }
 
 .no-action-message {
-  margin-top: 12px;
+  margin-top: 15px;
   opacity: 0.8;
+  color: $text-color;
+  font-style: italic;
+  font-family: 'Inter', sans-serif;
 }
 
-// Role Badge
+// Role Badge - Rickshaw art style
 .role-badge {
   display: inline-block;
-  padding: 6px 10px;
-  border-radius: 8px;
-  color: #fff;
-  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 15px;
+  color: $text-color;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  border: 3px solid $background-color;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.role-image {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.role-text {
+  vertical-align: middle;
 }
 
 .role-badge--chor {
-  background: #e11d48;
+  background: $tertiary-color;
+  border-color: $primary-color;
 }
 
 .role-badge--daktar {
-  background: #16a34a;
+  background: $secondary-color;
+  border-color: $secondary-color;
 }
 
 .role-badge--police {
-  background: #2563eb;
+  background: $secondary-color;
+  border-color: $primary-color;
 }
 
 .role-badge--babu {
-  background: #6b7280;
+  background: $primary-color;
+  border-color: $secondary-color;
 }
 
-// Role Row (Configure Roles)
+// Role Row - Rickshaw style
 .role-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-top: 8px;
+  gap: 15px;
+  margin-top: 15px;
+  padding: 15px;
+  background: $background-color;
+  border-radius: 15px;
+  border: 3px solid $secondary-color;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
   flex-wrap: wrap;
 }
 
 .role-row-label {
-  font-weight: 600;
+  font-weight: 700;
+  color: $text-color;
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
 }
 
 .role-row-controls {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .role-row-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   font-size: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
-  border: 1px solid #ccc;
-  background: #fff;
+  border: 3px solid $primary-color;
+  background: $secondary-color;
+  color: $text-color;
   cursor: pointer;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  white-space: nowrap;
   
   &:hover {
-    background: #f5f5f5;
+    background: $primary-color;
+    transform: scale(1.1);
   }
   
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    transform: none;
   }
 }
 
 .role-row-count {
-  min-width: 28px;
+  min-width: 35px;
   text-align: center;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 18px;
+  color: $text-color;
+  font-family: 'Poppins', sans-serif;
 }
 
-// Configure Roles
+// Configure Roles - Rickshaw style
 .configure-roles {
-  border: 1px solid #ccc;
-  padding: 12px;
-  border-radius: 8px;
-  margin-top: 12px;
+  border: 4px solid $secondary-color;
+  padding: 20px;
+  border-radius: 15px;
+  margin-top: 15px;
+  background: $background-color;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  position: relative;
+  
 }
 
 .configure-roles-title {
-  margin: 0 0 12px 0;
+  margin: 0 0 20px 0;
+  color: $secondary-color;
+  font-family: 'Poppins', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
 }
 
 .babu-info {
-  margin-top: 8px;
+  margin-top: 15px;
+  padding: 10px;
+  background: $secondary-color;
+  border-radius: 10px;
+  font-weight: 600;
+  color: $text-color;
+  text-align: center;
+  border: 3px solid $primary-color;
+  font-family: 'Inter', sans-serif;
 }
 
 .validation-errors {
-  margin-top: 8px;
-  color: #a00;
+  margin-top: 15px;
+  color: $tertiary-color;
+  background: $background-color;
+  padding: 15px;
+  border-radius: 10px;
+  border: 3px solid $tertiary-color;
 }
 
 .validation-error {
-  margin-bottom: 4px;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
 }
 
 .configure-controls {
-  margin-top: 8px;
+  margin-top: 15px;
   display: flex;
-  gap: 8px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-.save-roles-btn {
-  margin-top: 8px;
-}
 
 .start-game-btn {
-  // Start game button styles
+  background: $secondary-color;
+  color: $text-color;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  padding: 10px 14px;
 }
 
 .reset-default-btn {
   margin-left: 8px;
+  background: $primary-color;
+  color: $text-color;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  padding: 10px 14px;
 }
 
-// Utility classes
+// Utility classes with authentic rickshaw art styling
 .btn {
-  padding: 8px 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: #fff;
+  padding: 12px 16px;
+  border: 3px solid $primary-color;
+  border-radius: 15px;
+  background: $secondary-color;
+  color: $text-color;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  min-width: fit-content;
   
   &:hover {
-    background: #f5f5f5;
+    background: $primary-color;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   }
   
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.6;
     cursor: not-allowed;
+    transform: none;
+    background: $background-color;
   }
 }
 
 .input {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 12px 16px;
+  border: 3px solid $secondary-color;
+  border-radius: 10px;
   font-size: 14px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  background: $background-color;
+  color: $text-color;
+  transition: all 0.3s ease;
   
   &:focus {
     outline: none;
-    border-color: #2563eb;
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px $secondary-color;
+  }
+  
+  &::placeholder {
+    color: $primary-color;
+    font-weight: 500;
   }
 }
 
 .select {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: #fff;
+  padding: 12px 16px;
+  border: 3px solid $secondary-color;
+  border-radius: 10px;
+  background: $background-color;
   font-size: 14px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  color: $text-color;
+  transition: all 0.3s ease;
   
   &:focus {
     outline: none;
-    border-color: #2563eb;
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px $secondary-color;
   }
   
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.6;
     cursor: not-allowed;
   }
 }
 
-// Additional specific styles
-.host-controls {
+// Game End Container
+.game-end-container {
+  border: 4px solid $secondary-color;
+  padding: 20px;
+  border-radius: 15px;
+  margin: 15px 0;
+  background: $background-color;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.game-end-title {
+  margin: 0 0 10px 0;
+  color: $primary-color;
+  font-family: 'Poppins', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.game-end-winner {
+  font-size: 20px;
+  font-weight: 600;
+  color: $text-color;
+  font-family: 'Poppins', sans-serif;
+}
+
+.restart-game-btn {
+  margin-top: 20px;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 24px;
+}
+
+// Responsive design
+@media (max-width: 480px) {
+  .app-container {
+    margin: 10px;
+    padding: 15px;
+  }
+  
+  .create-game-controls {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .game-code-input {
+    width: 100%;
+  }
+  
+  .voting-controls,
+  .night-actions-controls {
+    flex-direction: column;
+  }
+}
+
+// Role Display Styles
+.role-display-container {
+  margin: 20px 0;
+}
+
+.role-display-button {
+  width: 100%;
+  padding: 15px 20px;
+  background: $secondary-color;
+  color: $text-color;
+  border: 3px solid $primary-color;
+  border-radius: 15px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+  &:hover {
+    background: $secondary-color;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.role-display-expanded {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.9);
   display: flex;
-  gap: 8px;
   align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  cursor: pointer;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
-.phase-info {
-  font-weight: 500;
+.role-image-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.dead-player {
-  opacity: 0.6;
-  text-decoration: line-through;
+.role-image-large {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.role-fallback {
+  background: $background-color;
+  border: 4px solid $secondary-color;
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.role-fallback-text {
+  font-size: 48px;
+  font-weight: bold;
+  color: $tertiary-color;
+}
+
+.role-minimize-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background: $tertiary-color;
+  color: $text-color;
+  border: 3px solid $secondary-color;
+  border-radius: 50%;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 1001;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+
+  &:hover {
+    background: $secondary-color;
+    transform: scale(1.1);
+  }
+}
+
+// Responsive adjustments for smaller screens
+@media (max-width: 768px) {
+  .role-display-expanded {
+    padding: 10px;
+  }
+  
+  .role-image-container {
+    max-width: 95vw;
+    max-height: 95vh;
+  }
+  
+  .role-minimize-button {
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    top: 10px;
+    right: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .role-minimize-button {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    top: 5px;
+    right: 5px;
+  }
+  
+  .role-fallback-text {
+    font-size: 36px;
+  }
+}
+
+// Theme Selector Styles
+.theme-selector {
+  margin-top: 20px;
+  padding: 0;
+}
+
+.theme-options {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.theme-option {
+  cursor: pointer;
+  
+  input[type="radio"] {
+    display: none;
+  }
+  
+  input[type="radio"]:checked + .theme-radio {
+    border-color: $secondary-color;
+    background: $background-color;
+    
+    &::after {
+      opacity: 1;
+      background: $background-color;
+      width: 4px;
+      height: 4px;
+      border: 3px solid $background-color;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+}
+
+.theme-radio {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid $secondary-color;
+  background: $background-color;
+  transition: all 0.3s ease;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: $secondary-color;
+    opacity: 0;
+    transition: all 0.3s ease;
+  }
+  
+  &:hover {
+    border-color: $primary-color;
+  }
+}
+
+// Responsive theme selector
+@media (max-width: 480px) {
+  .theme-options {
+    gap: 10px;
+  }
+  
+  .theme-radio {
+    width: 18px;
+    height: 18px;
+    
+    &::after {
+      width: 4px;
+      height: 4px;
+    }
+  }
+  
+  input[type="radio"]:checked + .theme-radio {
+    &::after {
+      width: 2px;
+      height: 2px;
+      background: $background-color;
+      border: 2px solid $background-color;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
 }

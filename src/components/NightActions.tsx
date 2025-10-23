@@ -11,6 +11,7 @@ interface NightActionsProps {
 export function NightActions(props: NightActionsProps) {
   const { myRole, gameCode, playerId, livingPlayers, canAct } = props;
   const [target, setTarget] = useState<string>("");
+  const [actionSubmitted, setActionSubmitted] = useState<boolean>(false);
   const actionable = myRole === 'chor' || myRole === 'daktar' || myRole === 'police';
 
   if (!actionable) {
@@ -26,16 +27,23 @@ export function NightActions(props: NightActionsProps) {
       <div className="night-actions-controls">
         <select className="select" value={target} onChange={(e) => setTarget(e.target.value)} disabled={!canAct}>
           <option value="">-- Select Player --</option>
-          {Object.entries(livingPlayers).filter(([, p]) => p.alive !== false).map(([id, p]) => (
+          {Object.entries(livingPlayers).filter(([id, p]) => {
+            if (p.alive === false) return false;
+            // Thief cannot select themselves as victim
+            if (myRole === 'chor' && id === playerId) return false;
+            return true;
+          }).map(([id, p]) => (
             <option key={id} value={id}>{p.name}</option>
           ))}
         </select>
-        <button className="btn confirm-btn" disabled={!target || !canAct} onClick={async () => {
+        <button className="btn confirm-btn" disabled={!target || !canAct || actionSubmitted} onClick={async () => {
           const { setNightAction } = await import('../api/game');
           const roleType = (myRole === 'chor' || myRole === 'daktar' || myRole === 'police') ? myRole : 'chor';
           await setNightAction(gameCode, playerId, { type: roleType as 'chor' | 'daktar' | 'police', target });
-          alert('Action submitted');
-        }}>Confirm</button>
+          setActionSubmitted(true);
+        }}>
+          {actionSubmitted ? '✅ Action Submitted' : 'Confirm'}
+        </button>
       </div>
     </div>
   );
