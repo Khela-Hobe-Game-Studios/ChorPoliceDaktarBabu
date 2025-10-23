@@ -1,7 +1,11 @@
-// Import clean, modern fonts
+// ===========================================
+// IMPORTS & SETUP
+// ===========================================
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
-// Dynamic Theme System - Uses CSS Custom Properties
+// ===========================================
+// THEME SYSTEM
+// ===========================================
 :root {
   --primary-color: #6b73ff;
   --secondary-color: #ff9a9e;
@@ -11,7 +15,6 @@
   --border-color: #6b73ff;
 }
 
-// SCSS variables for fallback and compatibility
 $primary-color: var(--primary-color);
 $secondary-color: var(--secondary-color);
 $tertiary-color: var(--tertiary-color);
@@ -19,14 +22,11 @@ $background-color: var(--background-color);
 $text-color: var(--text-color);
 $border-color: var(--border-color);
 
-// Base styles with rickshaw art inspiration
+// ===========================================
+// BASE STYLES
+// ===========================================
 * {
   box-sizing: border-box;
-}
-
-html {
-  background: $background-color;
-  min-height: 100%;
 }
 
 html, body {
@@ -35,19 +35,25 @@ html, body {
   background: $background-color;
 }
 
+html {
+  min-height: 100%;
+}
+
 body {
   font-family: 'Inter', sans-serif;
-  background: $background-color;
   color: $text-color;
   min-height: 100vh;
-  height: auto;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   padding-top: 20px;
 }
 
-// Main App Container - Dynamic Theme
+// ===========================================
+// LAYOUT COMPONENTS
+// ===========================================
+
+// Main Container
 .app-container {
   max-width: 480px;
   width: 100%;
@@ -57,20 +63,108 @@ body {
   border-radius: 20px;
   border: 4px solid $primary-color;
   box-shadow: 0 10px 30px rgba(107, 115, 255, 0.2);
-  position: relative;
   flex-shrink: 0;
 }
 
-// Decorative border pattern
-.app-container h2 {
+// Section Container (reusable)
+%section-container {
+  border: 4px solid $primary-color;
+  padding: 20px;
+  border-radius: 15px;
+  background: $background-color;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  margin: 15px 0;
+  position: relative;
+}
+
+// ===========================================
+// TYPOGRAPHY
+// ===========================================
+
+// Headers
+%header-base {
   font-family: 'Poppins', sans-serif;
-  font-size: 32px;
   font-weight: 700;
+  margin: 0 0 15px 0;
+}
+
+.app-container h2 {
+  @extend %header-base;
+  font-size: 32px;
   text-align: center;
   margin-bottom: 25px;
   color: $primary-color;
 }
 
+%section-title {
+  @extend %header-base;
+  font-size: 18px;
+  color: $primary-color;
+}
+
+// ===========================================
+// FORM ELEMENTS
+// ===========================================
+
+// Input Base
+%input-base {
+  padding: 12px 16px;
+  border: 3px solid $primary-color;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  background: $background-color;
+  color: $text-color;
+  transition: all 0.3s ease;
+  
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px $secondary-color;
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// Button Base
+%button-base {
+  padding: 12px 16px;
+  border: 3px solid $primary-color;
+  border-radius: 15px;
+  background: $secondary-color;
+  color: $text-color;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  min-width: fit-content;
+  
+  &:hover {
+    background: $primary-color;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    background: $background-color;
+  }
+}
+
+// ===========================================
+// COMPONENT STYLES
+// ===========================================
+
+// Game Code Display
 .game-code-display {
   margin-bottom: 20px;
   font-size: 24px;
@@ -83,13 +177,16 @@ body {
   border: 4px solid $secondary-color;
   font-family: 'Poppins', sans-serif;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .player-name-main {
   font-size: 20px;
   font-weight: 700;
   color: $background-color;
-  margin-bottom: 8px;
+  margin: 0;
   
   .eliminated-status {
     color: $tertiary-color;
@@ -103,20 +200,24 @@ body {
   font-weight: 500;
   color: $background-color;
   opacity: 0.9;
+  margin: 0;
 }
 
-// Create Game Bar - Rickshaw style
+// Create Game Bar
 .create-game-container {
+  @extend %section-container;
+  background: $secondary-color;
+  border-color: $primary-color;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 15px;
-  padding: 20px;
-  background: $secondary-color;
-  border-radius: 15px;
-  border: 4px solid $primary-color;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  position: relative;
-  
+}
+
+.create-game-container .input {
+  width: 100%;
+  max-width: 300px;
+  text-align: center;
 }
 
 .create-game-controls {
@@ -127,89 +228,49 @@ body {
 }
 
 .game-code-input {
+  @extend %input-base;
   width: 140px;
-  background: $background-color;
-  border: 3px solid $primary-color;
-  border-radius: 10px;
-  padding: 12px 16px;
-  font-weight: 600;
-  color: $text-color;
-  font-family: 'Inter', sans-serif;
-  
-  &:focus {
-    outline: none;
-    border-color: $primary-color;
-    box-shadow: 0 0 0 3px $secondary-color;
-  }
 }
 
-// Game Header - Traditional rickshaw style
+// Game Header
 .game-header {
-  position: sticky;
-  top: 0;
+  @extend %section-container;
   background: $secondary-color;
-  padding: 20px;
-  z-index: 10;
-  border-radius: 15px;
-  border: 4px solid $primary-color;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   margin-bottom: 15px;
-  position: relative;
-  
-}
-
-.game-header-content {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 10px;
-  flex-wrap: wrap;
 }
 
 .game-header-title {
-  margin: 0;
-  color: $text-color;
-  font-family: 'Poppins', sans-serif;
+  @extend %header-base;
   font-size: 20px;
-  font-weight: 700;
+  color: $text-color;
+  margin-bottom: 0;
 }
 
 .phase-info {
   color: $text-color;
   font-weight: 600;
   font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  margin: 0;
 }
 
 .host-controls {
   display: flex;
   gap: 10px;
   align-items: center;
+  margin-top: 10px;
 }
 
-.resolve-night-btn {
-  margin-left: 8px;
-  font-size: 12px;
-  padding: 10px 14px;
-}
-
-.role-toggle-container {
-  margin-top: 15px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-// Player List - Rickshaw art style
+// Player List
 .player-list {
   list-style: none;
-  padding: 0;
-  margin: 0;
-  background: $background-color;
-  border-radius: 15px;
   padding: 20px;
-  border: 4px solid $secondary-color;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  margin: 0;
+  @extend %section-container;
+  border-color: $secondary-color;
 }
 
 .player-item {
@@ -250,38 +311,26 @@ body {
   }
 }
 
-// Announcements - Clean style
+// Announcements
 .announcements {
-  border: 4px solid $primary-color;
-  padding: 20px;
-  border-radius: 15px;
-  background: $background-color;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  margin: 15px 0;
-  position: relative;
-  
+  @extend %section-container;
 }
 
 .announcements-title {
-  margin: 0 0 15px 0;
+  @extend %section-title;
   color: $text-color;
-  font-family: 'Poppins', sans-serif;
-  font-size: 18px;
-  font-weight: 700;
 }
 
-// Voting Component - Rickshaw style
+// Voting
 .voting-container {
-  border: 4px solid $primary-color;
-  padding: 20px;
-  border-radius: 15px;
-  margin-top: 15px;
-  background: $background-color;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  position: relative;
+  @extend %section-container;
   
   &:has(.finalize-btn) {
     margin-top: 0;
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
   }
   
   .finalize-btn {
@@ -296,21 +345,10 @@ body {
     padding: 0 !important;
     box-sizing: border-box;
   }
-  
-  &:has(.finalize-btn) {
-    border: none;
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-  }
 }
 
 .voting-title {
-  margin: 0 0 15px 0;
-  color: $primary-color;
-  font-family: 'Poppins', sans-serif;
-  font-size: 18px;
-  font-weight: 700;
+  @extend %section-title;
   text-align: center;
 }
 
@@ -323,51 +361,16 @@ body {
 }
 
 .vote-select {
-  background: $background-color;
-  border: 3px solid $primary-color;
-  border-radius: 10px;
-  padding: 12px 16px;
-  font-weight: 600;
-  color: $text-color;
-  font-family: 'Inter', sans-serif;
-  
-  &:focus {
-    outline: none;
-    border-color: $primary-color;
-    box-shadow: 0 0 0 3px $secondary-color;
-  }
+  @extend %input-base;
 }
 
-.submit-vote-btn {
-  margin-left: 8px;
-  font-size: 12px;
-  padding: 10px 14px;
-}
-
-.finalize-btn {
-  margin-left: 8px;
-  font-size: 12px;
-  padding: 10px 14px;
-}
-
-// Night Actions - Rickshaw style
+// Night Actions
 .night-actions-container {
-  border: 4px solid $primary-color;
-  padding: 20px;
-  border-radius: 15px;
-  margin-top: 15px;
-  background: $background-color;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  position: relative;
-  
+  @extend %section-container;
 }
 
 .night-actions-title {
-  margin: 0 0 15px 0;
-  color: $primary-color;
-  font-family: 'Poppins', sans-serif;
-  font-size: 18px;
-  font-weight: 700;
+  @extend %section-title;
 }
 
 .night-actions-label {
@@ -385,25 +388,7 @@ body {
 }
 
 .night-select {
-  background: $background-color;
-  border: 3px solid $primary-color;
-  border-radius: 10px;
-  padding: 12px 16px;
-  font-weight: 600;
-  color: $text-color;
-  font-family: 'Inter', sans-serif;
-  
-  &:focus {
-    outline: none;
-    border-color: $primary-color;
-    box-shadow: 0 0 0 3px $secondary-color;
-  }
-}
-
-.confirm-btn {
-  margin-left: 8px;
-  font-size: 12px;
-  padding: 10px 14px;
+  @extend %input-base;
 }
 
 .no-action-message {
@@ -414,7 +399,7 @@ body {
   font-family: 'Inter', sans-serif;
 }
 
-// Role Badge - Rickshaw art style
+// Role Badge
 .role-badge {
   display: inline-block;
   padding: 8px 16px;
@@ -458,7 +443,7 @@ body {
   border-color: $secondary-color;
 }
 
-// Role Row - Rickshaw style
+// Role Row
 .role-row {
   display: flex;
   align-items: center;
@@ -524,24 +509,16 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
-// Configure Roles - Rickshaw style
+// Configure Roles
 .configure-roles {
-  border: 4px solid $secondary-color;
-  padding: 20px;
-  border-radius: 15px;
-  margin-top: 15px;
-  background: $background-color;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  position: relative;
-  
+  @extend %section-container;
+  border-color: $secondary-color;
 }
 
 .configure-roles-title {
-  margin: 0 0 20px 0;
-  color: $secondary-color;
-  font-family: 'Poppins', sans-serif;
+  @extend %header-base;
   font-size: 20px;
-  font-weight: 700;
+  color: $secondary-color;
   text-align: center;
 }
 
@@ -579,119 +556,17 @@ body {
   flex-wrap: wrap;
 }
 
-
-.start-game-btn {
-  background: $secondary-color;
-  color: $text-color;
-  font-weight: 700;
-  font-family: 'Poppins', sans-serif;
-  font-size: 12px;
-  padding: 10px 14px;
-}
-
-.reset-default-btn {
-  margin-left: 8px;
-  background: $primary-color;
-  color: $text-color;
-  font-weight: 700;
-  font-family: 'Poppins', sans-serif;
-  font-size: 12px;
-  padding: 10px 14px;
-}
-
-// Utility classes with authentic rickshaw art styling
-.btn {
-  padding: 12px 16px;
-  border: 3px solid $primary-color;
-  border-radius: 15px;
-  background: $secondary-color;
-  color: $text-color;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-  font-family: 'Inter', sans-serif;
-  transition: all 0.3s ease;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-  white-space: nowrap;
-  min-width: fit-content;
-  
-  &:hover {
-    background: $primary-color;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  }
-  
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-    background: $background-color;
-  }
-}
-
-.input {
-  padding: 12px 16px;
-  border: 3px solid $secondary-color;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  font-family: 'Inter', sans-serif;
-  background: $background-color;
-  color: $text-color;
-  transition: all 0.3s ease;
-  
-  &:focus {
-    outline: none;
-    border-color: $primary-color;
-    box-shadow: 0 0 0 3px $secondary-color;
-  }
-  
-  &::placeholder {
-    color: $primary-color;
-    font-weight: 500;
-  }
-}
-
-.select {
-  padding: 12px 16px;
-  border: 3px solid $secondary-color;
-  border-radius: 10px;
-  background: $background-color;
-  font-size: 14px;
-  font-weight: 600;
-  font-family: 'Inter', sans-serif;
-  color: $text-color;
-  transition: all 0.3s ease;
-  
-  &:focus {
-    outline: none;
-    border-color: $primary-color;
-    box-shadow: 0 0 0 3px $secondary-color;
-  }
-  
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-}
-
-// Game End Container
+// Game End
 .game-end-container {
-  border: 4px solid $secondary-color;
-  padding: 20px;
-  border-radius: 15px;
-  margin: 15px 0;
-  background: $background-color;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  @extend %section-container;
+  border-color: $secondary-color;
   text-align: center;
 }
 
 .game-end-title {
-  margin: 0 0 10px 0;
-  color: $primary-color;
-  font-family: 'Poppins', sans-serif;
+  @extend %header-base;
   font-size: 24px;
-  font-weight: 700;
+  color: $primary-color;
 }
 
 .game-end-winner {
@@ -701,80 +576,17 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
-.restart-game-btn {
-  margin-top: 20px;
-  font-size: 16px;
-  font-weight: 600;
-  padding: 12px 24px;
-}
-
-// Responsive design
-@media (max-width: 480px) {
-  body {
-    padding-top: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-  
-  .app-container {
-    margin: 0;
-    padding: 15px;
-    width: 100%;
-  }
-  
-  .create-game-controls {
-    flex-direction: column;
-    gap: 8px;
-  }
-  
-  .game-code-input {
-    width: 100%;
-  }
-  
-  .voting-controls,
-  .night-actions-controls {
-    flex-direction: column;
-  }
-}
-
-// Additional responsive breakpoints for better centering
-@media (min-width: 481px) and (max-width: 768px) {
-  .app-container {
-    max-width: 90%;
-    width: 100%;
-  }
-}
-
-@media (min-width: 769px) {
-  .app-container {
-    max-width: 480px;
-    width: 100%;
-  }
-}
-
-// Role Display Styles
+// Role Display
 .role-display-container {
   margin: 20px 0;
 }
 
 .role-display-button {
+  @extend %button-base;
   width: 100%;
   padding: 15px 20px;
-  background: $secondary-color;
-  color: $text-color;
-  border: 3px solid $primary-color;
-  border-radius: 15px;
   font-size: 18px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-
-  &:hover {
-    background: $secondary-color;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-  }
+  border: 3px solid $primary-color;
 }
 
 .role-display-expanded {
@@ -863,41 +675,7 @@ body {
   }
 }
 
-// Responsive adjustments for smaller screens
-@media (max-width: 768px) {
-  .role-display-expanded {
-    padding: 10px;
-  }
-  
-  .role-image-container {
-    max-width: 95vw;
-    max-height: 95vh;
-  }
-  
-  .role-minimize-button {
-    width: 50px;
-    height: 50px;
-    font-size: 24px;
-    top: 10px;
-    right: 10px;
-  }
-}
-
-@media (max-width: 480px) {
-  .role-minimize-button {
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
-    top: 5px;
-    right: 5px;
-  }
-  
-  .role-fallback-text {
-    font-size: 36px;
-  }
-}
-
-// Theme Selector Styles
+// Theme Selector
 .theme-selector {
   margin-top: 20px;
   padding: 0;
@@ -962,8 +740,100 @@ body {
   }
 }
 
-// Responsive theme selector
+// ===========================================
+// UTILITY CLASSES
+// ===========================================
+
+.btn {
+  @extend %button-base;
+}
+
+.input {
+  @extend %input-base;
+  border-color: $secondary-color;
+  
+  &::placeholder {
+    color: $primary-color;
+    font-weight: 500;
+  }
+}
+
+.select {
+  @extend %input-base;
+  border-color: $secondary-color;
+}
+
+// Button Variants
+.submit-vote-btn,
+.confirm-btn,
+.finalize-btn,
+.resolve-night-btn,
+.role-row-btn {
+  margin-left: 8px;
+  font-size: 12px;
+  padding: 10px 14px;
+}
+
+.start-game-btn {
+  @extend %button-base;
+  background: $secondary-color;
+  color: $text-color;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  padding: 10px 14px;
+}
+
+.reset-default-btn {
+  @extend %button-base;
+  margin-left: 8px;
+  background: $primary-color;
+  color: $text-color;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  padding: 10px 14px;
+}
+
+.restart-game-btn {
+  @extend %button-base;
+  margin-top: 20px;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 24px;
+}
+
+// ===========================================
+// RESPONSIVE DESIGN
+// ===========================================
+
 @media (max-width: 480px) {
+  body {
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  
+  .app-container {
+    margin: 0;
+    padding: 15px;
+    width: 100%;
+  }
+  
+  .create-game-controls {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .game-code-input {
+    width: 100%;
+  }
+  
+  .voting-controls,
+  .night-actions-controls {
+    flex-direction: column;
+  }
+  
   .theme-options {
     gap: 10px;
   }
@@ -988,5 +858,50 @@ body {
       left: 50%;
       transform: translate(-50%, -50%);
     }
+  }
+  
+  .role-minimize-button {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    top: 5px;
+    right: 5px;
+  }
+  
+  .role-fallback-text {
+    font-size: 36px;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .app-container {
+    max-width: 90%;
+    width: 100%;
+  }
+}
+
+@media (min-width: 769px) {
+  .app-container {
+    max-width: 480px;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .role-display-expanded {
+    padding: 10px;
+  }
+  
+  .role-image-container {
+    max-width: 95vw;
+    max-height: 95vh;
+  }
+  
+  .role-minimize-button {
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    top: 10px;
+    right: 10px;
   }
 }

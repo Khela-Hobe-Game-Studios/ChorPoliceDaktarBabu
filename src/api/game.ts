@@ -23,7 +23,7 @@ export async function createGame(hostId: string): Promise<string> {
       round: 0,
       settings: {
         maxPlayers: 14,
-        roleConfig: { chor: 1, daktar: 1, police: 0, babu: 2 },
+        roleConfig: { chor: 1, daktar: 1, police: 1, babu: 1 },
         timerDurations: {},
       },
       players: {},
@@ -128,7 +128,7 @@ export async function assignRoles(gameCode: string): Promise<void> {
   ])
   if (!playersSnap.exists()) return
   const players = playersSnap.val() as Record<string, PlayerState>
-  const roleConfig = (settingsSnap.val() as RoleConfig) || { chor: 1, daktar: 1, police: 0, babu: 2 }
+  const roleConfig = (settingsSnap.val() as RoleConfig) || { chor: 1, daktar: 1, police: 1, babu: 1 }
   const playerIds = Object.keys(players)
   const total = playerIds.length
   const fixed = roleConfig.chor + roleConfig.daktar + roleConfig.police
@@ -241,9 +241,11 @@ export async function resolveNight(gameCode: string): Promise<void> {
   for (const pid of Object.keys(players)) {
     updates[`games/${gameCode}/players/${pid}/action`] = null
   }
-  // Move to day
-  updates[`games/${gameCode}/phase`] = 'day'
+  // Clear actions and update results
   await update(ref(db), updates)
+  
+  // Move to next phase (day -> voting)
+  await nextPhase(gameCode)
 }
 
 export function checkWinCondition(players: Record<string, PlayerState>): 'chor' | 'village' | null {

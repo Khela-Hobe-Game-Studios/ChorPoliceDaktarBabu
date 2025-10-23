@@ -8,7 +8,7 @@ export function useGameState(gameCode: string, playerId: string) {
   const [myRole, setMyRole] = useState<string>("");
   const [myAlive, setMyAlive] = useState<boolean>(true);
   const [hostId, setHostId] = useState<string | null>(null);
-  const [roles, setRoles] = useState({ chor: 1, daktar: 1, police: 0, babu: 2 });
+  const [roles, setRoles] = useState({ chor: 1, daktar: 1, police: 1, babu: 1 });
   const [phase, setPhase] = useState<string | null>(null);
   const [round, setRound] = useState<number>(0);
   const [lastDeath, setLastDeath] = useState<string | null>(null);
@@ -35,7 +35,7 @@ export function useGameState(gameCode: string, playerId: string) {
 
     // Game state listeners
     unsubs.push(onValue(ref(db, `games/${gameCode}/hostId`), (snap) => setHostId(snap.val())));
-    unsubs.push(onValue(ref(db, `games/${gameCode}/roles`), (snap) => setRoles(snap.val() || { chor: 1, daktar: 1, police: 0, babu: 2 })));
+    unsubs.push(onValue(ref(db, `games/${gameCode}/settings/roleConfig`), (snap) => setRoles(snap.val() || { chor: 1, daktar: 1, police: 1, babu: 1 })));
     unsubs.push(onValue(ref(db, `games/${gameCode}/phase`), (snap) => setPhase(snap.val())));
     unsubs.push(onValue(ref(db, `games/${gameCode}/round`), (snap) => setRound(snap.val() || 0)));
     

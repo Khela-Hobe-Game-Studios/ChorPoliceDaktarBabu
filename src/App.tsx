@@ -99,7 +99,6 @@ function App() {
       {showGameInterface && (
         <>
           <GameHeader
-            gameCode={gameCode}
             phase={gameState.phase}
             round={gameState.round}
             isHost={isHost}
@@ -162,7 +161,12 @@ function App() {
             <ConfigureRoles
               roles={gameState.roles}
               totalPlayers={totalPlayers}
-              onRolesChange={() => {}}
+              onRolesChange={async (newRoles) => {
+                console.log('Updating roles:', newRoles);
+                const { updateRoleConfig } = await import('./api/game');
+                await updateRoleConfig(gameCode, newRoles);
+                console.log('Roles updated successfully');
+              }}
               onStartGame={handleStartGame}
             />
           )}
