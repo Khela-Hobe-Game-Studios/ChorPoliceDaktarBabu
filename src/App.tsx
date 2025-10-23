@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import './App.css'
 import './styles/components.scss'
 import { getOrCreatePlayerId } from './utils'
-import { createGame, joinGame, startGame, nextPhase, checkWinCondition } from './api/game'
-import { db } from './firebase'
-import { onValue, ref } from 'firebase/database'
+import { createGame, joinGame, startGame, nextPhase } from './api/game'
+import { useTheme } from './hooks/useTheme'
+import { useGameState } from './hooks/useGameState'
 import { 
   CreateGameBar, 
   GameHeader, 
@@ -21,125 +20,15 @@ function App() {
   const [name, setName] = useState("")
   const [gameCode, setGameCode] = useState("")
   const [hasExplicitlyJoined, setHasExplicitlyJoined] = useState(false)
-  const [players, setPlayers] = useState<Record<string, { name: string; alive?: boolean }>>({})
-  const [myRole, setMyRole] = useState<string>("")
-  const [myAlive, setMyAlive] = useState<boolean>(true)
-  const [hostId, setHostId] = useState<string | null>(null)
-  const [roles, setRoles] = useState({ chor: 1, daktar: 1, police: 0, babu: 2 })
-  const [phase, setPhase] = useState<string | null>(null)
-  const [round, setRound] = useState<number>(0)
   const [showRole, setShowRole] = useState<boolean>(false)
-  const [lastDeath, setLastDeath] = useState<string | null>(null)
-  const [lastElimination, setLastElimination] = useState<string | null>(null)
-  const [lastInvestigation, setLastInvestigation] = useState<{ policeId: string; targetId: string; isChor: boolean } | null>(null)
-  const [gameEnded, setGameEnded] = useState<boolean>(false)
-  const [winner, setWinner] = useState<string | null>(null)
   const [currentTheme, setCurrentTheme] = useState<string>('chor')
-
-  // Theme definitions
-  const themes = {
-    default: {
-      primary: '#6b73ff',
-      secondary: '#ff9a9e',
-      tertiary: '#ff6b6b',
-      background: '#f0f4ff',
-      text: '#4a5568',
-      border: '#6b73ff'
-    },
-    chor: {
-      primary: '#8B0000',
-      secondary: '#FF6B6B',
-      tertiary: '#FFD700',
-      background: '#FFF5F5',
-      text: '#2C1810',
-      border: '#8B0000'
-    },
-    daktar: {
-      primary: '#006400',
-      secondary: '#00FF7F',
-      tertiary: '#FF1493',
-      background: '#F0FFF0',
-      text: '#2F4F4F',
-      border: '#006400'
-    },
-    police: {
-      primary: '#000080',
-      secondary: '#87CEEB',
-      tertiary: '#FF4500',
-      background: '#F0F8FF',
-      text: '#191970',
-      border: '#000080'
-    },
-    babu: {
-      primary: '#8B4513',
-      secondary: '#DDA0DD',
-      tertiary: '#FF69B4',
-      background: '#FFF8DC',
-      text: '#654321',
-      border: '#8B4513'
-    }
-  }
+  
+  const playerId = useMemo(() => getOrCreatePlayerId(), [])
+  const gameState = useGameState(gameCode, playerId)
 
   // Apply theme to CSS custom properties
-  useEffect(() => {
-    const theme = themes[currentTheme as keyof typeof themes] || themes.default
-    const root = document.documentElement
-    root.style.setProperty('--primary-color', theme.primary)
-    root.style.setProperty('--secondary-color', theme.secondary)
-    root.style.setProperty('--tertiary-color', theme.tertiary)
-    root.style.setProperty('--background-color', theme.background)
-    root.style.setProperty('--text-color', theme.text)
-    root.style.setProperty('--border-color', theme.border)
-  }, [currentTheme])
-  const playerId = useMemo(() => getOrCreatePlayerId(), [])
+  useTheme(currentTheme)
 
-  useEffect(() => {
-    if (!gameCode) return
-    const unsubs: Array<() => void> = []
-    unsubs.push(onValue(ref(db, `games/${gameCode}/players`), (snap) => {
-      type PlayerLeaf = { name: string; role?: string; alive?: boolean }
-      const all = (snap.val() as Record<string, PlayerLeaf> | null) ?? {}
-      console.log('Firebase listener received players:', Object.keys(all));
-      setPlayers(Object.fromEntries(Object.entries(all).map(([id, p]) => [id, { name: p.name, alive: p.alive !== false }])))
-      const mine = all[playerId]
-      setMyRole(mine?.role ?? "")
-      setMyAlive(mine?.alive !== false)
-      
-      // Check for game end condition
-      const gamePlayersForWinCheck = Object.fromEntries(
-        Object.entries(all).map(([id, p]) => [id, { 
-          name: p.name, 
-          role: p.role || '', 
-          alive: p.alive !== false 
-        }])
-      )
-      const winCondition = checkWinCondition(gamePlayersForWinCheck)
-      if (winCondition) {
-        setGameEnded(true)
-        setWinner(winCondition)
-      } else {
-        setGameEnded(false)
-        setWinner(null)
-      }
-    }))
-    unsubs.push(onValue(ref(db, `games/${gameCode}/hostId`), (snap) => {
-      setHostId((snap.val() as string) ?? null)
-    }))
-    unsubs.push(onValue(ref(db, `games/${gameCode}/settings/roleConfig`), (snap) => {
-      const v = snap.val() as typeof roles | null
-      if (v) setRoles(v)
-    }))
-    unsubs.push(onValue(ref(db, `games/${gameCode}/phase`), (snap) => setPhase((snap.val() as string) ?? null)))
-    unsubs.push(onValue(ref(db, `games/${gameCode}/round`), (snap) => setRound((snap.val() as number) ?? 0)))
-    unsubs.push(onValue(ref(db, `games/${gameCode}/results`), (snap) => {
-      type ResultsLeaf = { lastDeath?: string | null; lastElimination?: string | null; lastInvestigation?: { policeId: string; targetId: string; isChor: boolean } | null }
-      const v = (snap.val() as ResultsLeaf | null) ?? {}
-      setLastDeath(v.lastDeath ?? null)
-      setLastElimination(v.lastElimination ?? null)
-      setLastInvestigation(v.lastInvestigation ?? null)
-    }))
-    return () => { unsubs.forEach(u => u()) }
-  }, [gameCode, playerId])
 
   useEffect(() => {
     const key = 'cp_show_role'
@@ -164,13 +53,13 @@ function App() {
     setHasExplicitlyJoined(true)
   }
 
-  const isHost = hostId === playerId
+  const isHost = gameState.hostId === playerId
   // Check if player has explicitly joined or is host viewing the game
-  const hasJoinedGame = gameCode && hasExplicitlyJoined && players[playerId]
+  const hasJoinedGame = gameCode && hasExplicitlyJoined && gameState.players[playerId]
   // Show game interface if host (even if not joined as player)
   const showGameInterface = hasJoinedGame || (gameCode && isHost)
   // Exclude host from player count for game logic
-  const gamePlayers = Object.fromEntries(Object.entries(players).filter(([id]) => id !== hostId))
+  const gamePlayers = Object.fromEntries(Object.entries(gameState.players).filter(([id]) => id !== gameState.hostId))
   const totalPlayers = Object.keys(gamePlayers).length
 
   const handleStartGame = async () => {
@@ -193,7 +82,7 @@ function App() {
       {showGameInterface && (
         <div className="game-code-display">
           <div className="player-name-main">{name}</div>
-          {players[playerId]?.alive === false && <span className="eliminated-status"> (Eliminated)</span>}
+          {gameState.players[playerId]?.alive === false && <span className="eliminated-status"> (Eliminated)</span>}
           <div className="game-code-subheader">Game Code: {gameCode}</div>
         </div>
       )}
@@ -211,31 +100,31 @@ function App() {
         <>
           <GameHeader
             gameCode={gameCode}
-            phase={phase}
-            round={round}
+            phase={gameState.phase}
+            round={gameState.round}
             isHost={isHost}
-            gameEnded={gameEnded}
+            gameEnded={gameState.gameEnded}
             onNextPhase={() => nextPhase(gameCode)}
             onResolveNight={handleResolveNight}
           />
           <RoleDisplay
-            myRole={myRole}
+            myRole={gameState.myRole}
             showRole={showRole}
             onToggleShowRole={() => setShowRole((v) => !v)}
           />
           <PlayerList 
             players={gamePlayers} 
-            lastInvestigation={lastInvestigation}
+            lastInvestigation={gameState.lastInvestigation}
             playerId={playerId}
-            myRole={myRole}
+            myRole={gameState.myRole}
           />
-          {gameEnded && phase && (
+          {gameState.gameEnded && gameState.phase && (
             <div className="game-end-container">
               <h3 className="game-end-title">
                 🎉 Game Ended! 🎉
               </h3>
               <div className="game-end-winner">
-                {winner === 'chor' ? 'Chor Wins! 🦹‍♂️' : 'Village Wins! 🏘️'}
+                {gameState.winner === 'chor' ? 'Chor Wins! 🦹‍♂️' : 'Village Wins! 🏘️'}
               </div>
               {isHost && (
                 <button className="btn restart-game-btn" onClick={handleRestartGame}>
@@ -245,35 +134,35 @@ function App() {
             </div>
           )}
           <Announcements
-            lastDeath={lastDeath}
-            lastElimination={lastElimination}
-            lastInvestigation={lastInvestigation}
-            players={players}
+            lastDeath={gameState.lastDeath}
+            lastElimination={gameState.lastElimination}
+            lastInvestigation={gameState.lastInvestigation}
+            players={gameState.players}
             playerId={playerId}
           />
-          {phase === 'voting' && (
+          {gameState.phase === 'voting' && (
             <Voting
               gameCode={gameCode}
               playerId={playerId}
               livingPlayers={gamePlayers}
               isHost={isHost}
-              canVote={myAlive}
+              canVote={gameState.myAlive}
             />
           )}
-          {phase === 'night' && myRole && (
+          {gameState.phase === 'night' && gameState.myRole && (
             <NightActions
-              myRole={myRole}
+              myRole={gameState.myRole}
               gameCode={gameCode}
               playerId={playerId}
               livingPlayers={gamePlayers}
-              canAct={myAlive}
+              canAct={gameState.myAlive}
             />
           )}
-          {isHost && !phase && (
+          {isHost && !gameState.phase && (
             <ConfigureRoles
-              roles={roles}
+              roles={gameState.roles}
               totalPlayers={totalPlayers}
-              onRolesChange={setRoles}
+              onRolesChange={() => {}}
               onStartGame={handleStartGame}
             />
           )}

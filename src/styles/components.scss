@@ -24,26 +24,41 @@ $border-color: var(--border-color);
   box-sizing: border-box;
 }
 
+html {
+  background: $background-color;
+  min-height: 100%;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: $background-color;
+}
+
 body {
   font-family: 'Inter', sans-serif;
   background: $background-color;
   color: $text-color;
-  margin: 0;
-  padding: 0;
   min-height: 100vh;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 20px;
 }
 
 // Main App Container - Dynamic Theme
 .app-container {
   max-width: 480px;
-  margin: 20px auto;
+  width: 100%;
+  margin: 0;
   padding: 25px;
   background: $background-color;
   border-radius: 20px;
   border: 4px solid $primary-color;
   box-shadow: 0 10px 30px rgba(107, 115, 255, 0.2);
   position: relative;
-  
+  flex-shrink: 0;
 }
 
 // Decorative border pattern
@@ -245,22 +260,6 @@ body {
   margin: 15px 0;
   position: relative;
   
-  &::before {
-    content: '📢';
-    position: absolute;
-    top: -15px;
-    left: 20px;
-    font-size: 20px;
-    background: $primary-color;
-    color: $background-color;
-    padding: 8px;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
 }
 
 .announcements-title {
@@ -361,22 +360,6 @@ body {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   position: relative;
   
-  &::before {
-    content: '🌙';
-    position: absolute;
-    top: -15px;
-    left: 20px;
-    font-size: 20px;
-    background: $primary-color;
-    color: $text-color;
-    padding: 8px;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
 }
 
 .night-actions-title {
@@ -727,9 +710,16 @@ body {
 
 // Responsive design
 @media (max-width: 480px) {
+  body {
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  
   .app-container {
-    margin: 10px;
+    margin: 0;
     padding: 15px;
+    width: 100%;
   }
   
   .create-game-controls {
@@ -744,6 +734,21 @@ body {
   .voting-controls,
   .night-actions-controls {
     flex-direction: column;
+  }
+}
+
+// Additional responsive breakpoints for better centering
+@media (min-width: 481px) and (max-width: 768px) {
+  .app-container {
+    max-width: 90%;
+    width: 100%;
+  }
+}
+
+@media (min-width: 769px) {
+  .app-container {
+    max-width: 480px;
+    width: 100%;
   }
 }
 
