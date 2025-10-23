@@ -23,7 +23,7 @@ export async function createGame(hostId: string): Promise<string> {
       round: 0,
       settings: {
         maxPlayers: 14,
-        roleConfig: { chor: 1, daktar: 1, police: 0, babu: 2 },
+        roleConfig: { chor: 1, daktar: 1, police: 1, babu: 1 },
         timerDurations: {},
       },
       players: {},
@@ -40,14 +40,26 @@ export async function joinGame(gameCode: string, playerId: string, name: string)
   const gameSnap = await get(child(ref(db), `games/${gameCode}`));
   if (!gameSnap.exists()) throw new Error("Game not found");
 
-  const playerRef = ref(db, `games/${gameCode}/players/${playerId}`);
-  await set(playerRef, {
+  // Get current players to verify we're not overwriting
+  const playersSnap = await get(child(ref(db), `games/${gameCode}/players`));
+  const currentPlayers = playersSnap.val() as Record<string, any> || {};
+  console.log('Current players before join:', Object.keys(currentPlayers));
+
+  // Use update to ensure we're adding to existing players, not replacing
+  const updates: Record<string, unknown> = {};
+  updates[`games/${gameCode}/players/${playerId}`] = {
     name,
     role: "",
     alive: true,
     action: null,
     vote: null,
-  });
+  };
+  await update(ref(db), updates);
+  
+  // Verify the update worked
+  const updatedPlayersSnap = await get(child(ref(db), `games/${gameCode}/players`));
+  const updatedPlayers = updatedPlayersSnap.val() as Record<string, any> || {};
+  console.log('Players after join:', Object.keys(updatedPlayers));
 }
 
 export async function updateRoleConfig(gameCode: string, roleConfig: RoleConfig): Promise<void> {
@@ -116,7 +128,7 @@ export async function assignRoles(gameCode: string): Promise<void> {
   ])
   if (!playersSnap.exists()) return
   const players = playersSnap.val() as Record<string, PlayerState>
-  const roleConfig = (settingsSnap.val() as RoleConfig) || { chor: 1, daktar: 1, police: 0, babu: 2 }
+  const roleConfig = (settingsSnap.val() as RoleConfig) || { chor: 1, daktar: 1, police: 1, babu: 1 }
   const playerIds = Object.keys(players)
   const total = playerIds.length
   const fixed = roleConfig.chor + roleConfig.daktar + roleConfig.police
@@ -229,9 +241,11 @@ export async function resolveNight(gameCode: string): Promise<void> {
   for (const pid of Object.keys(players)) {
     updates[`games/${gameCode}/players/${pid}/action`] = null
   }
-  // Move to day
-  updates[`games/${gameCode}/phase`] = 'day'
+  // Clear actions and update results
   await update(ref(db), updates)
+  
+  // Move to next phase (day -> voting)
+  await nextPhase(gameCode)
 }
 
 export function checkWinCondition(players: Record<string, PlayerState>): 'chor' | 'village' | null {
@@ -241,6 +255,37 @@ export function checkWinCondition(players: Record<string, PlayerState>): 'chor' 
   if (livingChor <= 0) return 'village'
   if (livingChor >= livingNonChor) return 'chor'
   return null
+}
+
+export async function restartGame(gameCode: string): Promise<void> {
+  const gameRef = ref(db, `games/${gameCode}`);
+  const gameSnap = await get(gameRef);
+  if (!gameSnap.exists()) throw new Error("Game not found");
+
+  const gameData = gameSnap.val();
+  const players = gameData.players || {};
+  
+  // Reset all players to alive and clear their roles
+  const resetPlayers: Record<string, any> = {};
+  Object.keys(players).forEach(playerId => {
+    resetPlayers[`players/${playerId}/alive`] = true;
+    resetPlayers[`players/${playerId}/role`] = "";
+    resetPlayers[`players/${playerId}/action`] = null;
+    resetPlayers[`players/${playerId}/vote`] = null;
+  });
+
+  // Reset game state
+  const updates = {
+    ...resetPlayers,
+    phase: null,
+    round: 0,
+    results: null,
+    gameEnded: false,
+    winner: null,
+    announcements: null
+  };
+
+  await update(gameRef, updates);
 }
 
 

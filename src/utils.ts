@@ -10,7 +10,7 @@ export function getOrCreatePlayerId(): string {
 export function getDefaultRolesByCount(playerCount: number) {
   // Based on the spec table for 4-14 players
   const table: Record<number, { chor: number; daktar: number; police: number; babu: number }> = {
-    4: { chor: 1, daktar: 1, police: 0, babu: 2 },
+    4: { chor: 1, daktar: 1, police: 1, babu: 1 },
     5: { chor: 1, daktar: 1, police: 1, babu: 2 },
     6: { chor: 2, daktar: 1, police: 1, babu: 2 },
     7: { chor: 2, daktar: 1, police: 1, babu: 3 },

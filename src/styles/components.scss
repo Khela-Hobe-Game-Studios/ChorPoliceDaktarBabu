@@ -1,0 +1,907 @@
+// ===========================================
+// IMPORTS & SETUP
+// ===========================================
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+// ===========================================
+// THEME SYSTEM
+// ===========================================
+:root {
+  --primary-color: #6b73ff;
+  --secondary-color: #ff9a9e;
+  --tertiary-color: #ff6b6b;
+  --background-color: #f8f9ff;
+  --text-color: #4a5568;
+  --border-color: #6b73ff;
+}
+
+$primary-color: var(--primary-color);
+$secondary-color: var(--secondary-color);
+$tertiary-color: var(--tertiary-color);
+$background-color: var(--background-color);
+$text-color: var(--text-color);
+$border-color: var(--border-color);
+
+// ===========================================
+// BASE STYLES
+// ===========================================
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: $background-color;
+}
+
+html {
+  min-height: 100%;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  color: $text-color;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 20px;
+}
+
+// ===========================================
+// LAYOUT COMPONENTS
+// ===========================================
+
+// Main Container
+.app-container {
+  max-width: 480px;
+  width: 100%;
+  margin: 0;
+  padding: 25px;
+  background: $background-color;
+  border-radius: 20px;
+  border: 4px solid $primary-color;
+  box-shadow: 0 10px 30px rgba(107, 115, 255, 0.2);
+  flex-shrink: 0;
+}
+
+// Section Container (reusable)
+%section-container {
+  border: 4px solid $primary-color;
+  padding: 20px;
+  border-radius: 15px;
+  background: $background-color;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  margin: 15px 0;
+  position: relative;
+}
+
+// ===========================================
+// TYPOGRAPHY
+// ===========================================
+
+// Headers
+%header-base {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  margin: 0 0 15px 0;
+}
+
+.app-container h2 {
+  @extend %header-base;
+  font-size: 32px;
+  text-align: center;
+  margin-bottom: 25px;
+  color: $primary-color;
+}
+
+%section-title {
+  @extend %header-base;
+  font-size: 18px;
+  color: $primary-color;
+}
+
+// ===========================================
+// FORM ELEMENTS
+// ===========================================
+
+// Input Base
+%input-base {
+  padding: 12px 16px;
+  border: 3px solid $primary-color;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  background: $background-color;
+  color: $text-color;
+  transition: all 0.3s ease;
+  
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px $secondary-color;
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// Button Base
+%button-base {
+  padding: 12px 16px;
+  border: 3px solid $primary-color;
+  border-radius: 15px;
+  background: $secondary-color;
+  color: $text-color;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  min-width: fit-content;
+  
+  &:hover {
+    background: $primary-color;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    background: $background-color;
+  }
+}
+
+// ===========================================
+// COMPONENT STYLES
+// ===========================================
+
+// Game Code Display
+.game-code-display {
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 700;
+  color: $background-color;
+  text-align: center;
+  background: $primary-color;
+  padding: 15px;
+  border-radius: 15px;
+  border: 4px solid $secondary-color;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.player-name-main {
+  font-size: 20px;
+  font-weight: 700;
+  color: $background-color;
+  margin: 0;
+  
+  .eliminated-status {
+    color: $tertiary-color;
+    font-weight: 600;
+    font-style: italic;
+  }
+}
+
+.game-code-subheader {
+  font-size: 16px;
+  font-weight: 500;
+  color: $background-color;
+  opacity: 0.9;
+  margin: 0;
+}
+
+// Create Game Bar
+.create-game-container {
+  @extend %section-container;
+  background: $secondary-color;
+  border-color: $primary-color;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.create-game-container .input {
+  width: 100%;
+  max-width: 300px;
+  text-align: center;
+}
+
+.create-game-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+.game-code-input {
+  @extend %input-base;
+  width: 140px;
+}
+
+// Game Header
+.game-header {
+  @extend %section-container;
+  background: $secondary-color;
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.game-header-title {
+  @extend %header-base;
+  font-size: 20px;
+  color: $text-color;
+  margin-bottom: 0;
+}
+
+.phase-info {
+  color: $text-color;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  margin: 0;
+}
+
+.host-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+// Player List
+.player-list {
+  list-style: none;
+  padding: 20px;
+  margin: 0;
+  @extend %section-container;
+  border-color: $secondary-color;
+}
+
+.player-item {
+  padding: 12px 20px;
+  margin: 8px 0;
+  background: $secondary-color;
+  border-radius: 10px;
+  font-weight: 600;
+  color: $text-color;
+  border: 3px solid $primary-color;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+  
+  &::before {
+    content: '👤';
+    margin-right: 8px;
+  }
+  
+  &.police-identified-chor::before {
+    content: '';
+  }
+  
+  &:hover {
+    background: $secondary-color;
+    color: $text-color;
+    transform: translateX(5px);
+  }
+}
+
+.dead-player {
+  opacity: 0.7;
+  text-decoration: line-through;
+  background: $background-color;
+  color: $primary-color;
+  
+  &::before {
+    content: '💀';
+  }
+}
+
+// Announcements
+.announcements {
+  @extend %section-container;
+}
+
+.announcements-title {
+  @extend %section-title;
+  color: $text-color;
+}
+
+// Voting
+.voting-container {
+  @extend %section-container;
+  
+  &:has(.finalize-btn) {
+    margin-top: 0;
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
+  
+  .finalize-btn {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 60px;
+    font-size: 18px;
+    font-weight: 700;
+    border: 4px solid $primary-color;
+    border-radius: 15px;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box;
+  }
+}
+
+.voting-title {
+  @extend %section-title;
+  text-align: center;
+}
+
+.voting-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+
+.vote-select {
+  @extend %input-base;
+}
+
+// Night Actions
+.night-actions-container {
+  @extend %section-container;
+}
+
+.night-actions-title {
+  @extend %section-title;
+}
+
+.night-actions-label {
+  margin-bottom: 15px;
+  color: $text-color;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+}
+
+.night-actions-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.night-select {
+  @extend %input-base;
+}
+
+.no-action-message {
+  margin-top: 15px;
+  opacity: 0.8;
+  color: $text-color;
+  font-style: italic;
+  font-family: 'Inter', sans-serif;
+}
+
+// Role Badge
+.role-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 15px;
+  color: $text-color;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  border: 3px solid $background-color;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.role-image {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.role-text {
+  vertical-align: middle;
+}
+
+.role-badge--chor {
+  background: $tertiary-color;
+  border-color: $primary-color;
+}
+
+.role-badge--daktar {
+  background: $secondary-color;
+  border-color: $secondary-color;
+}
+
+.role-badge--police {
+  background: $secondary-color;
+  border-color: $primary-color;
+}
+
+.role-badge--babu {
+  background: $primary-color;
+  border-color: $secondary-color;
+}
+
+// Role Row
+.role-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 15px;
+  padding: 15px;
+  background: $background-color;
+  border-radius: 15px;
+  border: 3px solid $secondary-color;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  flex-wrap: wrap;
+}
+
+.role-row-label {
+  font-weight: 700;
+  color: $text-color;
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+}
+
+.role-row-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.role-row-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 3px solid $primary-color;
+  background: $secondary-color;
+  color: $text-color;
+  cursor: pointer;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  white-space: nowrap;
+  
+  &:hover {
+    background: $primary-color;
+    transform: scale(1.1);
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+.role-row-count {
+  min-width: 35px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 18px;
+  color: $text-color;
+  font-family: 'Poppins', sans-serif;
+}
+
+// Configure Roles
+.configure-roles {
+  @extend %section-container;
+  border-color: $secondary-color;
+}
+
+.configure-roles-title {
+  @extend %header-base;
+  font-size: 20px;
+  color: $secondary-color;
+  text-align: center;
+}
+
+.babu-info {
+  margin-top: 15px;
+  padding: 10px;
+  background: $secondary-color;
+  border-radius: 10px;
+  font-weight: 600;
+  color: $text-color;
+  text-align: center;
+  border: 3px solid $primary-color;
+  font-family: 'Inter', sans-serif;
+}
+
+.validation-errors {
+  margin-top: 15px;
+  color: $tertiary-color;
+  background: $background-color;
+  padding: 15px;
+  border-radius: 10px;
+  border: 3px solid $tertiary-color;
+}
+
+.validation-error {
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+}
+
+.configure-controls {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+// Game End
+.game-end-container {
+  @extend %section-container;
+  border-color: $secondary-color;
+  text-align: center;
+}
+
+.game-end-title {
+  @extend %header-base;
+  font-size: 24px;
+  color: $primary-color;
+}
+
+.game-end-winner {
+  font-size: 20px;
+  font-weight: 600;
+  color: $text-color;
+  font-family: 'Poppins', sans-serif;
+}
+
+// Role Display
+.role-display-container {
+  margin: 20px 0;
+}
+
+.role-display-button {
+  @extend %button-base;
+  width: 100%;
+  padding: 15px 20px;
+  font-size: 18px;
+  border: 3px solid $primary-color;
+}
+
+.role-display-expanded {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  cursor: pointer;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.role-image-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.role-image-large {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.role-fallback {
+  background: $background-color;
+  border: 4px solid $secondary-color;
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.role-fallback-text {
+  font-size: 48px;
+  font-weight: bold;
+  color: $tertiary-color;
+}
+
+.role-minimize-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background: $tertiary-color;
+  color: $text-color;
+  border: 3px solid $secondary-color;
+  border-radius: 50%;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 1001;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+
+  &:hover {
+    background: $secondary-color;
+    transform: scale(1.1);
+  }
+}
+
+// Theme Selector
+.theme-selector {
+  margin-top: 20px;
+  padding: 0;
+}
+
+.theme-options {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.theme-option {
+  cursor: pointer;
+  
+  input[type="radio"] {
+    display: none;
+  }
+  
+  input[type="radio"]:checked + .theme-radio {
+    border-color: $secondary-color;
+    background: $background-color;
+    
+    &::after {
+      opacity: 1;
+      background: $background-color;
+      width: 4px;
+      height: 4px;
+      border: 3px solid $background-color;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+}
+
+.theme-radio {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid $secondary-color;
+  background: $background-color;
+  transition: all 0.3s ease;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: $secondary-color;
+    opacity: 0;
+    transition: all 0.3s ease;
+  }
+  
+  &:hover {
+    border-color: $primary-color;
+  }
+}
+
+// ===========================================
+// UTILITY CLASSES
+// ===========================================
+
+.btn {
+  @extend %button-base;
+}
+
+.input {
+  @extend %input-base;
+  border-color: $secondary-color;
+  
+  &::placeholder {
+    color: $primary-color;
+    font-weight: 500;
+  }
+}
+
+.select {
+  @extend %input-base;
+  border-color: $secondary-color;
+}
+
+// Button Variants
+.submit-vote-btn,
+.confirm-btn,
+.finalize-btn,
+.resolve-night-btn,
+.role-row-btn {
+  margin-left: 8px;
+  font-size: 12px;
+  padding: 10px 14px;
+}
+
+.start-game-btn {
+  @extend %button-base;
+  background: $secondary-color;
+  color: $text-color;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  padding: 10px 14px;
+}
+
+.reset-default-btn {
+  @extend %button-base;
+  margin-left: 8px;
+  background: $primary-color;
+  color: $text-color;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  padding: 10px 14px;
+}
+
+.restart-game-btn {
+  @extend %button-base;
+  margin-top: 20px;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 24px;
+}
+
+// ===========================================
+// RESPONSIVE DESIGN
+// ===========================================
+
+@media (max-width: 480px) {
+  body {
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  
+  .app-container {
+    margin: 0;
+    padding: 15px;
+    width: 100%;
+  }
+  
+  .create-game-controls {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .game-code-input {
+    width: 100%;
+  }
+  
+  .voting-controls,
+  .night-actions-controls {
+    flex-direction: column;
+  }
+  
+  .theme-options {
+    gap: 10px;
+  }
+  
+  .theme-radio {
+    width: 18px;
+    height: 18px;
+    
+    &::after {
+      width: 4px;
+      height: 4px;
+    }
+  }
+  
+  input[type="radio"]:checked + .theme-radio {
+    &::after {
+      width: 2px;
+      height: 2px;
+      background: $background-color;
+      border: 2px solid $background-color;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+  
+  .role-minimize-button {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    top: 5px;
+    right: 5px;
+  }
+  
+  .role-fallback-text {
+    font-size: 36px;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .app-container {
+    max-width: 90%;
+    width: 100%;
+  }
+}
+
+@media (min-width: 769px) {
+  .app-container {
+    max-width: 480px;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .role-display-expanded {
+    padding: 10px;
+  }
+  
+  .role-image-container {
+    max-width: 95vw;
+    max-height: 95vh;
+  }
+  
+  .role-minimize-button {
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    top: 10px;
+    right: 10px;
+  }
+}
