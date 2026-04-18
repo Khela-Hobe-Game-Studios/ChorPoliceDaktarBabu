@@ -153,15 +153,63 @@ function App() {
               onNextPhase={() => nextPhase(gameCode)}
               onResolveNight={handleResolveNight}
             />
-            {gameState.phase === 'voting' && (
-              <Voting
-                gameCode={gameCode}
-                playerId={playerId}
-                livingPlayers={gamePlayers}
-                isHost={isHost}
-                canVote={gameState.myAlive}
-              />
-            )}
+            {gameState.phase === 'voting' && (() => {
+              // Build live tally from player data (vote field is in Firebase but not typed)
+              const living = Object.entries(gamePlayers).filter(([, p]) => p.alive !== false)
+              const tally: Record<string, { name: string; count: number }> = {}
+              let votedCount = 0
+              living.forEach(([, p]) => {
+                const vote = (p as any).vote as string | null
+                if (vote) {
+                  votedCount++
+                  const targetName = gamePlayers[vote]?.name ?? vote
+                  tally[vote] = { name: targetName, count: (tally[vote]?.count ?? 0) + 1 }
+                }
+              })
+              const majority = Math.floor(living.length / 2) + 1
+              const sorted = Object.values(tally).sort((a, b) => b.count - a.count)
+
+              return (
+                <>
+                  <div className="host-vote-progress">
+                    <div className="host-vote-header">
+                      <span className="host-vote-count">
+                        🗳️ {votedCount} / {living.length} voted
+                      </span>
+                      <span className="host-vote-majority">
+                        Need {majority} for elimination
+                      </span>
+                    </div>
+                    {sorted.length > 0 && (
+                      <div className="host-vote-tally">
+                        {sorted.map(({ name, count }) => (
+                          <div key={name} className="host-vote-tally-row">
+                            <span className="host-vote-tally-name">{name}</span>
+                            <div className="host-vote-tally-bar-wrap">
+                              <div
+                                className={`host-vote-tally-bar${count >= majority ? ' host-vote-tally-bar--majority' : ''}`}
+                                style={{ width: `${Math.round((count / living.length) * 100)}%` }}
+                              />
+                            </div>
+                            <span className="host-vote-tally-num">{count}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {sorted.length === 0 && (
+                      <div className="host-vote-waiting">Waiting for votes...</div>
+                    )}
+                  </div>
+                  <Voting
+                    gameCode={gameCode}
+                    playerId={playerId}
+                    livingPlayers={gamePlayers}
+                    isHost={isHost}
+                    canVote={gameState.myAlive}
+                  />
+                </>
+              )
+            })()}
           </div>
 
           {/* ── Right: announcements feed ── */}

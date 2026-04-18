@@ -1017,6 +1017,98 @@ body:has(.host-root) {
   padding: 10px 20px;
 }
 
+// ── Vote tally (host only) ────────────────
+.host-vote-progress {
+  background: $secondary-color;
+  border: 3px solid $border-color;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  box-shadow: $shadow-sm;
+}
+
+.host-vote-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.host-vote-count {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: $text-color;
+}
+
+.host-vote-majority {
+  font-size: 12px;
+  font-weight: 600;
+  color: $text-color;
+  opacity: 0.65;
+}
+
+.host-vote-tally {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.host-vote-tally-row {
+  display: grid;
+  grid-template-columns: 90px 1fr 28px;
+  align-items: center;
+  gap: 8px;
+}
+
+.host-vote-tally-name {
+  font-weight: 600;
+  font-size: 13px;
+  color: $text-color;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.host-vote-tally-bar-wrap {
+  height: 14px;
+  background: $background-color;
+  border-radius: 7px;
+  border: 2px solid $border-color;
+  overflow: hidden;
+}
+
+.host-vote-tally-bar {
+  height: 100%;
+  background: $primary-color;
+  border-radius: 5px;
+  transition: width 0.3s ease;
+  min-width: 4px;
+
+  &--majority {
+    background: #38a169;
+    box-shadow: 0 0 0 2px #276749 inset;
+  }
+}
+
+.host-vote-tally-num {
+  font-weight: 700;
+  font-size: 13px;
+  color: $text-color;
+  text-align: right;
+}
+
+.host-vote-waiting {
+  font-size: 13px;
+  color: $text-color;
+  opacity: 0.55;
+  font-style: italic;
+  text-align: center;
+  padding: 4px 0;
+}
+
 // ── 3-column grid ─────────────────────────
 .host-layout {
   display: grid;
