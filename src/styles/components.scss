@@ -60,7 +60,7 @@ body {
 // ===========================================
 
 .app-container {
-  max-width: 480px;
+  max-width: 560px;
   width: 100%;
   margin: 0;
   padding: 25px;
@@ -809,7 +809,7 @@ body {
 // RESPONSIVE DESIGN
 // ===========================================
 
-@media (max-width: 480px) {
+@media (max-width: 560px) {
   body {
     padding-top: 10px;
     padding-left: 10px;
@@ -861,7 +861,7 @@ body {
   .role-fallback-text { font-size: 36px; }
 }
 
-@media (min-width: 481px) and (max-width: 768px) {
+@media (min-width: 561px) and (max-width: 768px) {
   .app-container {
     max-width: 90%;
     width: 100%;
@@ -870,7 +870,7 @@ body {
 
 @media (min-width: 769px) {
   .app-container {
-    max-width: 480px;
+    max-width: 560px;
     width: 100%;
   }
 }
@@ -915,7 +915,7 @@ body:has(.host-root) {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: 14px 28px;
+  padding: 18px 40px;
   background: $primary-color;
   border-bottom: 4px solid $shadow-color;
   box-shadow: 0 4px 0 $shadow-color;
@@ -929,7 +929,7 @@ body:has(.host-root) {
 
 .host-topbar-title {
   font-family: 'Poppins', sans-serif;
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 800;
   color: $background-color;
   margin: 0;
@@ -949,7 +949,7 @@ body:has(.host-root) {
 .host-topbar-code {
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 18px;
   color: $background-color;
   background: rgba(255, 255, 255, 0.18);
   padding: 5px 14px;
@@ -960,8 +960,8 @@ body:has(.host-root) {
 
 .host-phase-chip {
   font-weight: 700;
-  font-size: 13px;
-  padding: 5px 14px;
+  font-size: 15px;
+  padding: 6px 18px;
   border-radius: 20px;
   border: 2px solid transparent;
   white-space: nowrap;
@@ -974,7 +974,7 @@ body:has(.host-root) {
 
 .host-player-count {
   font-family: 'Inter', sans-serif;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: $background-color;
   opacity: 0.85;
@@ -1112,9 +1112,9 @@ body:has(.host-root) {
 // ── 3-column grid ─────────────────────────
 .host-layout {
   display: grid;
-  grid-template-columns: 280px 1fr 320px;
-  gap: 20px;
-  padding: 24px;
+  grid-template-columns: 340px 1fr 400px;
+  gap: 28px;
+  padding: 32px;
   flex: 1;
   align-items: start;
 }
@@ -1122,8 +1122,8 @@ body:has(.host-root) {
 .host-panel {
   background: $background-color;
   border: 4px solid $border-color;
-  border-radius: 18px;
-  padding: 20px;
+  border-radius: 20px;
+  padding: 28px;
   box-shadow: $shadow-md;
 
   &--main {
@@ -1153,7 +1153,9 @@ body:has(.host-root) {
   }
 
   .player-item {
-    margin: 6px 0;
+    margin: 8px 0;
+    padding: 14px 20px;
+    font-size: 15px;
   }
 
   .role-row {
@@ -1182,46 +1184,59 @@ body:has(.host-root) {
 
   // Host controls get larger for TV readability
   .host-controls .btn {
-    font-size: 15px;
-    padding: 12px 20px;
-    min-height: 48px;
+    font-size: 16px;
+    padding: 14px 24px;
+    min-height: 52px;
   }
 
   .phase-info {
-    font-size: 18px;
-    margin-bottom: 12px;
+    font-size: 20px;
+    margin-bottom: 14px;
   }
 }
 
 .host-panel-heading {
   font-family: 'Poppins', sans-serif;
   font-weight: 800;
-  font-size: 15px;
+  font-size: 17px;
   color: $primary-color;
-  margin-bottom: 16px;
-  padding-bottom: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
   border-bottom: 3px solid $border-color;
   letter-spacing: 0.02em;
   text-transform: uppercase;
 }
 
 // ── Host responsive ───────────────────────
-@media (max-width: 1000px) {
+@media (max-width: 1400px) {
   .host-layout {
-    grid-template-columns: 240px 1fr 260px;
-    gap: 14px;
-    padding: 16px;
+    grid-template-columns: 300px 1fr 340px;
+    gap: 22px;
+    padding: 24px;
   }
+}
+
+@media (max-width: 1100px) {
+  .host-layout {
+    grid-template-columns: 260px 1fr 280px;
+    gap: 16px;
+    padding: 18px;
+  }
+
+  .host-panel { padding: 20px; }
 }
 
 @media (max-width: 780px) {
   .host-layout {
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto;
+    padding: 14px;
+    gap: 14px;
   }
 
-  .host-panel:last-child {
-    grid-column: 1 / -1;
+  .host-panel {
+    padding: 16px;
+    &:last-child { grid-column: 1 / -1; }
   }
 }
 
@@ -1230,7 +1245,7 @@ body:has(.host-root) {
 // ===========================================
 
 // Night actions & voting — stack and fill on mobile
-@media (max-width: 480px) {
+@media (max-width: 560px) {
   .night-actions-controls,
   .voting-controls {
     flex-direction: column;
