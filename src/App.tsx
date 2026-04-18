@@ -91,8 +91,12 @@ function App() {
         <div className="host-topbar">
           <h2 className="host-topbar-title">Chor Police Daktar Babu</h2>
 
-          <div className="host-topbar-info">
-            <span className="host-topbar-code">🎮 {gameCode}</span>
+          <div className="host-topbar-code-hero">
+            <span className="host-topbar-code-label">Room Code</span>
+            <span className="host-topbar-code">{gameCode}</span>
+          </div>
+
+          <div className="host-topbar-right">
             {gameState.phase ? (
               <span className={`host-phase-chip host-phase-chip--${gameState.phase}`}>
                 {phaseEmoji[gameState.phase]} {gameState.phase} · Round {gameState.round}
@@ -103,9 +107,8 @@ function App() {
             <span className="host-player-count">
               👥 {totalPlayers} player{totalPlayers !== 1 ? 's' : ''}
             </span>
+            <ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} />
           </div>
-
-          <ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} />
         </div>
 
         {gameState.gameEnded && gameState.phase && (
