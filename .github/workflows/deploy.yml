@@ -35,8 +35,8 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          # Subpath required for GitHub Pages project sites
-          VITE_BASE: /${{ github.event.repository.name }}/
+          # Custom domain means the site lives at root, not a subpath
+          VITE_BASE: /
           # Firebase config — add each of these as a Repository Secret:
           # Settings → Secrets and variables → Actions → New repository secret
           VITE_FB_API_KEY:              ${{ secrets.VITE_FB_API_KEY }}
