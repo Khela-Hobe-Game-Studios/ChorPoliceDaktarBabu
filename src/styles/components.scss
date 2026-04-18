@@ -7,27 +7,35 @@
 // THEME SYSTEM
 // ===========================================
 :root {
-  --primary-color: #6b73ff;
-  --secondary-color: #ff9a9e;
-  --tertiary-color: #ff6b6b;
+  --primary-color:    #6b73ff;
+  --secondary-color:  #ff9a9e;
+  --tertiary-color:   #ff6b6b;
   --background-color: #f8f9ff;
-  --text-color: #4a5568;
-  --border-color: #6b73ff;
+  --text-color:       #4a5568;
+  --border-color:     #6b73ff;
+  // Cartoon solid shadow — always slightly darker than border
+  --shadow-color:     #3b42cc;
 }
 
-$primary-color: var(--primary-color);
-$secondary-color: var(--secondary-color);
-$tertiary-color: var(--tertiary-color);
+$primary-color:    var(--primary-color);
+$secondary-color:  var(--secondary-color);
+$tertiary-color:   var(--tertiary-color);
 $background-color: var(--background-color);
-$text-color: var(--text-color);
-$border-color: var(--border-color);
+$text-color:       var(--text-color);
+$border-color:     var(--border-color);
+$shadow-color:     var(--shadow-color);
+
+// Cartoon shadow shorthand
+// Usage: box-shadow: $shadow-sm / $shadow-md / $shadow-lg
+$shadow-sm:  3px 3px 0 $shadow-color;
+$shadow-md:  4px 4px 0 $shadow-color;
+$shadow-lg:  6px 6px 0 $shadow-color;
+$shadow-pressed: 1px 1px 0 $shadow-color;
 
 // ===========================================
 // BASE STYLES
 // ===========================================
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 html, body {
   margin: 0;
@@ -35,9 +43,7 @@ html, body {
   background: $background-color;
 }
 
-html {
-  min-height: 100%;
-}
+html { min-height: 100%; }
 
 body {
   font-family: 'Inter', sans-serif;
@@ -53,7 +59,6 @@ body {
 // LAYOUT COMPONENTS
 // ===========================================
 
-// Main Container
 .app-container {
   max-width: 480px;
   width: 100%;
@@ -61,18 +66,17 @@ body {
   padding: 25px;
   background: $background-color;
   border-radius: 20px;
-  border: 4px solid $primary-color;
-  box-shadow: 0 10px 30px rgba(107, 115, 255, 0.2);
+  border: 4px solid $border-color;
+  box-shadow: $shadow-lg;
   flex-shrink: 0;
 }
 
-// Section Container (reusable)
 %section-container {
-  border: 4px solid $primary-color;
+  border: 4px solid $border-color;
   padding: 20px;
-  border-radius: 15px;
+  border-radius: 16px;
   background: $background-color;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: $shadow-md;
   margin: 15px 0;
   position: relative;
 }
@@ -81,7 +85,6 @@ body {
 // TYPOGRAPHY
 // ===========================================
 
-// Headers
 %header-base {
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
@@ -106,57 +109,79 @@ body {
 // FORM ELEMENTS
 // ===========================================
 
-// Input Base
 %input-base {
   padding: 12px 16px;
-  border: 3px solid $primary-color;
-  border-radius: 10px;
+  border: 3px solid $border-color;
+  border-radius: 12px;
   font-size: 14px;
   font-weight: 600;
   font-family: 'Inter', sans-serif;
   background: $background-color;
   color: $text-color;
-  transition: all 0.3s ease;
-  
+  transition: box-shadow 0.12s ease, transform 0.12s ease;
+  box-shadow: $shadow-sm;
+
   &:focus {
     outline: none;
-    border-color: $primary-color;
-    box-shadow: 0 0 0 3px $secondary-color;
+    box-shadow: $shadow-pressed;
+    transform: translate(2px, 2px);
   }
-  
+
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.55;
     cursor: not-allowed;
+    box-shadow: none;
   }
 }
 
-// Button Base
+// Custom select — strips OS chrome and uses a hand-drawn-style arrow
+%select-base {
+  @extend %input-base;
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 38px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='10' viewBox='0 0 14 10'%3E%3Cpath d='M1 1l6 7 6-7' stroke='%234a5568' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='10' viewBox='0 0 14 10'%3E%3Cpath d='M1 1l6 7 6-7' stroke='%23a0aec0' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+}
+
 %button-base {
-  padding: 12px 16px;
-  border: 3px solid $primary-color;
-  border-radius: 15px;
+  padding: 12px 18px;
+  border: 3px solid $border-color;
+  border-radius: 14px;
   background: $secondary-color;
   color: $text-color;
   cursor: pointer;
   font-size: 13px;
-  font-weight: 600;
-  font-family: 'Inter', sans-serif;
-  transition: all 0.3s ease;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  box-shadow: $shadow-sm;
   white-space: nowrap;
   min-width: fit-content;
-  
-  &:hover {
-    background: $primary-color;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.01em;
+
+  &:hover:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: $shadow-pressed;
   }
-  
+
+  &:active:not(:disabled) {
+    transform: translate(3px, 3px);
+    box-shadow: none;
+  }
+
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.55;
     cursor: not-allowed;
+    box-shadow: none;
     transform: none;
-    background: $background-color;
   }
 }
 
@@ -173,10 +198,10 @@ body {
   text-align: center;
   background: $primary-color;
   padding: 15px;
-  border-radius: 15px;
-  border: 4px solid $secondary-color;
+  border-radius: 16px;
+  border: 4px solid $border-color;
   font-family: 'Poppins', sans-serif;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: $shadow-md;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -187,7 +212,7 @@ body {
   font-weight: 700;
   color: $background-color;
   margin: 0;
-  
+
   .eliminated-status {
     color: $tertiary-color;
     font-weight: 600;
@@ -207,7 +232,7 @@ body {
 .create-game-container {
   @extend %section-container;
   background: $secondary-color;
-  border-color: $primary-color;
+  border-color: $border-color;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -277,44 +302,42 @@ body {
   padding: 12px 20px;
   margin: 8px 0;
   background: $secondary-color;
-  border-radius: 10px;
+  border-radius: 12px;
   font-weight: 600;
   color: $text-color;
-  border: 3px solid $primary-color;
+  border: 3px solid $border-color;
   font-family: 'Inter', sans-serif;
   position: relative;
-  
+  box-shadow: $shadow-sm;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+
   &::before {
     content: '👤';
     margin-right: 8px;
   }
-  
-  &.police-identified-chor::before {
-    content: '';
-  }
-  
+
+  &.police-identified-chor::before { content: ''; }
+
   &:hover {
-    background: $secondary-color;
-    color: $text-color;
-    transform: translateX(5px);
+    transform: translate(2px, 2px);
+    box-shadow: $shadow-pressed;
   }
 }
 
 .dead-player {
-  opacity: 0.7;
+  opacity: 0.65;
   text-decoration: line-through;
   background: $background-color;
   color: $primary-color;
-  
-  &::before {
-    content: '💀';
-  }
+  box-shadow: none;
+  transform: none !important;
+
+  &::before { content: '💀'; }
+  &:hover { transform: none !important; box-shadow: none !important; }
 }
 
 // Announcements
-.announcements {
-  @extend %section-container;
-}
+.announcements { @extend %section-container; }
 
 .announcements-title {
   @extend %section-title;
@@ -324,22 +347,23 @@ body {
 // Voting
 .voting-container {
   @extend %section-container;
-  
+
   &:has(.finalize-btn) {
     margin-top: 0;
     border: none;
     padding: 0;
     margin: 0;
+    box-shadow: none;
     box-sizing: border-box;
   }
-  
+
   .finalize-btn {
     width: 100% !important;
     height: 100% !important;
     min-height: 60px;
     font-size: 18px;
     font-weight: 700;
-    border: 4px solid $primary-color;
+    border: 4px solid $border-color;
     border-radius: 15px;
     margin: 0 !important;
     padding: 0 !important;
@@ -347,10 +371,7 @@ body {
   }
 }
 
-.voting-title {
-  @extend %section-title;
-  text-align: center;
-}
+.voting-title { @extend %section-title; text-align: center; }
 
 .voting-controls {
   display: flex;
@@ -360,18 +381,12 @@ body {
   flex-wrap: nowrap;
 }
 
-.vote-select {
-  @extend %input-base;
-}
+.vote-select { @extend %select-base; }
 
 // Night Actions
-.night-actions-container {
-  @extend %section-container;
-}
+.night-actions-container { @extend %section-container; }
 
-.night-actions-title {
-  @extend %section-title;
-}
+.night-actions-title { @extend %section-title; }
 
 .night-actions-label {
   margin-bottom: 15px;
@@ -387,9 +402,7 @@ body {
   flex-wrap: nowrap;
 }
 
-.night-select {
-  @extend %input-base;
-}
+.night-select { @extend %select-base; }
 
 .no-action-message {
   margin-top: 15px;
@@ -403,12 +416,12 @@ body {
 .role-badge {
   display: inline-block;
   padding: 8px 16px;
-  border-radius: 15px;
+  border-radius: 14px;
   color: $text-color;
   font-weight: 700;
   font-family: 'Poppins', sans-serif;
   border: 3px solid $background-color;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: $shadow-sm;
 }
 
 .role-image {
@@ -419,29 +432,12 @@ body {
   vertical-align: middle;
 }
 
-.role-text {
-  vertical-align: middle;
-}
+.role-text { vertical-align: middle; }
 
-.role-badge--chor {
-  background: $tertiary-color;
-  border-color: $primary-color;
-}
-
-.role-badge--daktar {
-  background: $secondary-color;
-  border-color: $secondary-color;
-}
-
-.role-badge--police {
-  background: $secondary-color;
-  border-color: $primary-color;
-}
-
-.role-badge--babu {
-  background: $primary-color;
-  border-color: $secondary-color;
-}
+.role-badge--chor   { background: $tertiary-color; border-color: $border-color; }
+.role-badge--daktar { background: $secondary-color; border-color: $secondary-color; }
+.role-badge--police { background: $secondary-color; border-color: $border-color; }
+.role-badge--babu   { background: $primary-color;   border-color: $secondary-color; }
 
 // Role Row
 .role-row {
@@ -452,9 +448,9 @@ body {
   margin-top: 15px;
   padding: 15px;
   background: $background-color;
-  border-radius: 15px;
+  border-radius: 14px;
   border: 3px solid $secondary-color;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: $shadow-sm;
   flex-wrap: wrap;
 }
 
@@ -480,22 +476,30 @@ body {
   align-items: center;
   justify-content: center;
   padding: 0;
-  border: 3px solid $primary-color;
+  border: 3px solid $border-color;
   background: $secondary-color;
   color: $text-color;
   cursor: pointer;
   font-weight: 700;
   font-family: 'Inter', sans-serif;
   white-space: nowrap;
-  
-  &:hover {
-    background: $primary-color;
-    transform: scale(1.1);
+  box-shadow: $shadow-sm;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+
+  &:hover:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: $shadow-pressed;
   }
-  
+
+  &:active:not(:disabled) {
+    transform: translate(3px, 3px);
+    box-shadow: none;
+  }
+
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    box-shadow: none;
     transform: none;
   }
 }
@@ -526,12 +530,13 @@ body {
   margin-top: 15px;
   padding: 10px;
   background: $secondary-color;
-  border-radius: 10px;
+  border-radius: 12px;
   font-weight: 600;
   color: $text-color;
   text-align: center;
-  border: 3px solid $primary-color;
+  border: 3px solid $border-color;
   font-family: 'Inter', sans-serif;
+  box-shadow: $shadow-sm;
 }
 
 .validation-errors {
@@ -539,8 +544,9 @@ body {
   color: $tertiary-color;
   background: $background-color;
   padding: 15px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 3px solid $tertiary-color;
+  box-shadow: $shadow-sm;
 }
 
 .validation-error {
@@ -577,16 +583,14 @@ body {
 }
 
 // Role Display
-.role-display-container {
-  margin: 20px 0;
-}
+.role-display-container { margin: 20px 0; }
 
 .role-display-button {
   @extend %button-base;
   width: 100%;
   padding: 15px 20px;
   font-size: 18px;
-  border: 3px solid $primary-color;
+  border: 3px solid $border-color;
 }
 
 .role-display-expanded {
@@ -623,12 +627,13 @@ body {
   max-height: 100%;
   object-fit: contain;
   border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 8px 8px 0 $shadow-color;
   cursor: pointer;
-  transition: transform 0.3s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 
   &:hover {
-    transform: scale(1.05);
+    transform: translate(3px, 3px);
+    box-shadow: 5px 5px 0 $shadow-color;
   }
 }
 
@@ -638,7 +643,7 @@ body {
   border-radius: 20px;
   padding: 40px;
   text-align: center;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 8px 8px 0 $shadow-color;
 }
 
 .role-fallback-text {
@@ -663,15 +668,16 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  box-shadow: $shadow-sm;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
   z-index: 1001;
   line-height: 1;
   padding: 0;
   margin: 0;
 
   &:hover {
-    background: $secondary-color;
-    transform: scale(1.1);
+    transform: translate(2px, 2px);
+    box-shadow: $shadow-pressed;
   }
 }
 
@@ -690,15 +696,14 @@ body {
 
 .theme-option {
   cursor: pointer;
-  
-  input[type="radio"] {
-    display: none;
-  }
-  
+
+  input[type="radio"] { display: none; }
+
   input[type="radio"]:checked + .theme-radio {
     border-color: $secondary-color;
     background: $background-color;
-    
+    box-shadow: 2px 2px 0 $shadow-color;
+
     &::after {
       opacity: 1;
       background: $background-color;
@@ -713,14 +718,15 @@ body {
 }
 
 .theme-radio {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  border: 2px solid $secondary-color;
+  border: 3px solid $secondary-color;
   background: $background-color;
-  transition: all 0.3s ease;
+  box-shadow: 2px 2px 0 $shadow-color;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
   position: relative;
-  
+
   &::after {
     content: '';
     position: absolute;
@@ -732,11 +738,13 @@ body {
     border-radius: 50%;
     background: $secondary-color;
     opacity: 0;
-    transition: all 0.3s ease;
+    transition: opacity 0.15s ease;
   }
-  
+
   &:hover {
-    border-color: $primary-color;
+    border-color: $border-color;
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 $shadow-color;
   }
 }
 
@@ -744,24 +752,19 @@ body {
 // UTILITY CLASSES
 // ===========================================
 
-.btn {
-  @extend %button-base;
-}
+.btn { @extend %button-base; }
 
 .input {
   @extend %input-base;
   border-color: $secondary-color;
-  
+
   &::placeholder {
     color: $primary-color;
     font-weight: 500;
   }
 }
 
-.select {
-  @extend %input-base;
-  border-color: $secondary-color;
-}
+.select { @extend %select-base; }
 
 // Button Variants
 .submit-vote-btn,
@@ -786,7 +789,6 @@ body {
 
 .reset-default-btn {
   @extend %button-base;
-  margin-left: 8px;
   background: $primary-color;
   color: $text-color;
   font-weight: 700;
@@ -813,53 +815,41 @@ body {
     padding-left: 10px;
     padding-right: 10px;
   }
-  
+
   .app-container {
     margin: 0;
     padding: 15px;
     width: 100%;
   }
-  
+
   .create-game-controls {
     flex-direction: column;
     gap: 8px;
   }
-  
-  .game-code-input {
-    width: 100%;
-  }
-  
+
+  .game-code-input { width: 100%; }
+
   .voting-controls,
   .night-actions-controls {
     flex-direction: column;
   }
-  
-  .theme-options {
-    gap: 10px;
-  }
-  
+
+  .theme-options { gap: 10px; }
+
   .theme-radio {
-    width: 18px;
-    height: 18px;
-    
-    &::after {
-      width: 4px;
-      height: 4px;
-    }
+    width: 20px;
+    height: 20px;
+
+    &::after { width: 6px; height: 6px; }
   }
-  
-  input[type="radio"]:checked + .theme-radio {
-    &::after {
-      width: 2px;
-      height: 2px;
-      background: $background-color;
-      border: 2px solid $background-color;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
+
+  input[type="radio"]:checked + .theme-radio::after {
+    width: 2px;
+    height: 2px;
+    background: $background-color;
+    border: 2px solid $background-color;
   }
-  
+
   .role-minimize-button {
     width: 40px;
     height: 40px;
@@ -867,10 +857,8 @@ body {
     top: 5px;
     right: 5px;
   }
-  
-  .role-fallback-text {
-    font-size: 36px;
-  }
+
+  .role-fallback-text { font-size: 36px; }
 }
 
 @media (min-width: 481px) and (max-width: 768px) {
@@ -888,15 +876,13 @@ body {
 }
 
 @media (max-width: 768px) {
-  .role-display-expanded {
-    padding: 10px;
-  }
-  
+  .role-display-expanded { padding: 10px; }
+
   .role-image-container {
     max-width: 95vw;
     max-height: 95vh;
   }
-  
+
   .role-minimize-button {
     width: 50px;
     height: 50px;
@@ -904,4 +890,651 @@ body {
     top: 10px;
     right: 10px;
   }
+}
+
+// ===========================================
+// HOST DASHBOARD (laptop / TV)
+// ===========================================
+
+body:has(.host-root) {
+  padding-top: 0;
+  align-items: stretch;
+}
+
+.host-root {
+  width: 100%;
+  min-height: 100vh;
+  background: $background-color;
+  display: flex;
+  flex-direction: column;
+}
+
+// ── Top bar ──────────────────────────────
+.host-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 28px;
+  background: $primary-color;
+  border-bottom: 4px solid $shadow-color;
+  box-shadow: 0 4px 0 $shadow-color;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+
+  // inline theme selector in the topbar
+  .theme-selector { margin-top: 0; }
+  .theme-options   { gap: 8px; }
+}
+
+.host-topbar-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: $background-color;
+  margin: 0;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+
+.host-topbar-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex: 1;
+  justify-content: center;
+}
+
+.host-topbar-code {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: $background-color;
+  background: rgba(255, 255, 255, 0.18);
+  padding: 5px 14px;
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.04em;
+}
+
+.host-phase-chip {
+  font-weight: 700;
+  font-size: 13px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 2px solid transparent;
+  white-space: nowrap;
+
+  &--night  { background: #2d3748; color: #e2e8f0; border-color: #1a202c; box-shadow: 2px 2px 0 #1a202c; }
+  &--day    { background: #f6e05e; color: #2d3748; border-color: #b7791f; box-shadow: 2px 2px 0 #b7791f; }
+  &--voting { background: $background-color; color: $primary-color; border-color: rgba(255,255,255,0.5); box-shadow: 2px 2px 0 $shadow-color; }
+  &--lobby  { background: rgba(255,255,255,0.2); color: $background-color; border-color: rgba(255,255,255,0.4); }
+}
+
+.host-player-count {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: $background-color;
+  opacity: 0.85;
+}
+
+// ── Winner banner ─────────────────────────
+.host-winner-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 14px 28px;
+  border-bottom: 4px solid transparent;
+  flex-shrink: 0;
+
+  &--village {
+    background: #c6f6d5;
+    border-color: #38a169;
+    box-shadow: 0 4px 0 #276749;
+    .host-winner-text { color: #276749; }
+  }
+
+  &--chor {
+    background: #fed7d7;
+    border-color: #e53e3e;
+    box-shadow: 0 4px 0 #c53030;
+    .host-winner-text { color: #c53030; }
+  }
+}
+
+.host-winner-text {
+  font-family: 'Poppins', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.host-restart-btn {
+  @extend %button-base;
+  font-size: 14px;
+  padding: 10px 20px;
+}
+
+// ── 3-column grid ─────────────────────────
+.host-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr 320px;
+  gap: 20px;
+  padding: 24px;
+  flex: 1;
+  align-items: start;
+}
+
+.host-panel {
+  background: $background-color;
+  border: 4px solid $border-color;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: $shadow-md;
+
+  &--main {
+    border-color: $secondary-color;
+  }
+
+  // Strip inner components of their own container chrome —
+  // the panel itself is the container
+  .game-header,
+  .announcements,
+  .player-list,
+  .configure-roles,
+  .voting-container {
+    border: none;
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+  }
+
+  // Restore internal spacing
+  .game-header-title,
+  .announcements-title,
+  .configure-roles-title {
+    display: none; // heading is replaced by host-panel-heading
+  }
+
+  .player-item {
+    margin: 6px 0;
+  }
+
+  .role-row {
+    border-color: $secondary-color;
+    box-shadow: $shadow-sm;
+  }
+
+  .babu-info {
+    box-shadow: $shadow-sm;
+  }
+
+  .validation-errors {
+    box-shadow: $shadow-sm;
+  }
+
+  // Finalize vote button fills its host panel column
+  .finalize-btn {
+    width: 100%;
+    min-height: 80px;
+    font-size: 20px !important;
+    border: 4px solid $border-color;
+    border-radius: 14px;
+    box-shadow: $shadow-md;
+    margin-top: 8px !important;
+  }
+
+  // Host controls get larger for TV readability
+  .host-controls .btn {
+    font-size: 15px;
+    padding: 12px 20px;
+    min-height: 48px;
+  }
+
+  .phase-info {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+}
+
+.host-panel-heading {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  font-size: 15px;
+  color: $primary-color;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 3px solid $border-color;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+// ── Host responsive ───────────────────────
+@media (max-width: 1000px) {
+  .host-layout {
+    grid-template-columns: 240px 1fr 260px;
+    gap: 14px;
+    padding: 16px;
+  }
+}
+
+@media (max-width: 780px) {
+  .host-layout {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  .host-panel:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+// ===========================================
+// PLAYER MOBILE ENHANCEMENTS
+// ===========================================
+
+// Night actions & voting — stack and fill on mobile
+@media (max-width: 480px) {
+  .night-actions-controls,
+  .voting-controls {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .night-select,
+  .vote-select,
+  .select {
+    width: 100%;
+  }
+
+  .confirm-btn,
+  .submit-vote-btn {
+    width: 100%;
+    min-height: 52px;
+    font-size: 15px !important;
+    margin-left: 0 !important;
+    margin-top: 0;
+  }
+
+  // Bigger player list items for touch
+  .player-item {
+    padding: 14px 20px;
+    font-size: 15px;
+    margin: 10px 0;
+  }
+
+  // Phase info larger on phone
+  .phase-info { font-size: 17px; }
+
+  // Role display button full width, tall
+  .role-display-button {
+    min-height: 56px;
+    font-size: 20px;
+  }
+
+  // Game header controls fill width
+  .host-controls {
+    flex-direction: column;
+    gap: 8px;
+
+    .btn {
+      width: 100%;
+      min-height: 48px;
+      font-size: 15px;
+    }
+  }
+
+  // Game code display compact
+  .game-code-display {
+    padding: 12px;
+    font-size: 20px;
+  }
+}
+
+// ===========================================
+// SIMULATION LAUNCHER
+// ===========================================
+
+.launcher-sub {
+  text-align: center;
+  font-size: 13px;
+  color: $text-color;
+  opacity: 0.7;
+  margin: -10px 0 18px;
+  font-family: 'Inter', sans-serif;
+}
+
+.launcher-players {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.launcher-player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 6px;
+  border-radius: 12px;
+  border: 3px solid $border-color;
+  box-shadow: $shadow-sm;
+  background: $background-color;
+  text-align: center;
+
+  &--chor   { border-color: #e53e3e; background: #fff5f5; box-shadow: 3px 3px 0 #c53030; }
+  &--police { border-color: #3182ce; background: #ebf8ff; box-shadow: 3px 3px 0 #2b6cb0; }
+  &--daktar { border-color: #38a169; background: #f0fff4; box-shadow: 3px 3px 0 #276749; }
+  &--babu   { border-color: $border-color; background: $background-color; }
+}
+
+.launcher-player-emoji { font-size: 20px; line-height: 1; }
+
+.launcher-player-name {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  color: $text-color;
+}
+
+.launcher-player-role {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $text-color;
+  opacity: 0.6;
+}
+
+.launcher-code {
+  text-align: center;
+  font-size: 16px;
+  font-family: 'Poppins', sans-serif;
+  color: $text-color;
+  margin-bottom: 14px;
+  padding: 10px;
+  background: $secondary-color;
+  border-radius: 12px;
+  border: 3px solid $border-color;
+  box-shadow: $shadow-sm;
+}
+
+.launcher-launch-btn {
+  display: block;
+  width: 100%;
+  font-size: 16px !important;
+  padding: 14px !important;
+  margin-bottom: 4px;
+}
+
+.launcher-running {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  color: $primary-color;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.launcher-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 3px solid $secondary-color;
+  border-top-color: $primary-color;
+  border-radius: 50%;
+  animation: launcher-spin 0.8s linear infinite;
+}
+
+@keyframes launcher-spin {
+  to { transform: rotate(360deg); }
+}
+
+.launcher-done {
+  text-align: center;
+  padding: 12px;
+  background: #c6f6d5;
+  border: 3px solid #38a169;
+  border-radius: 12px;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  color: #276749;
+  font-size: 16px;
+  box-shadow: 3px 3px 0 #276749;
+  margin-bottom: 4px;
+}
+
+// ===========================================
+// SIMULATION VIEW
+// ===========================================
+
+.sim-root {
+  max-width: 920px;
+  width: 100%;
+  padding: 28px 24px 40px;
+  font-family: 'Inter', sans-serif;
+  color: $text-color;
+}
+
+.sim-header {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.sim-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: $primary-color;
+  margin: 0 0 4px 0;
+  line-height: 1.2;
+}
+
+.sim-subtitle {
+  font-size: 13px;
+  color: $text-color;
+  opacity: 0.65;
+  margin: 0 0 14px 0;
+}
+
+.sim-meta {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 14px;
+  color: $text-color;
+}
+
+.sim-meta-item { font-weight: 500; }
+
+.sim-phase-badge {
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 13px;
+  border: 2px solid transparent;
+
+  &--night  { background: #2d3748; color: #e2e8f0; border-color: #1a202c; box-shadow: 2px 2px 0 #1a202c; }
+  &--day    { background: #f6e05e; color: #2d3748; border-color: #b7791f; box-shadow: 2px 2px 0 #b7791f; }
+  &--voting { background: $primary-color; color: #fff; border-color: $shadow-color; box-shadow: 2px 2px 0 $shadow-color; }
+}
+
+.sim-winner-banner {
+  text-align: center;
+  padding: 14px 20px;
+  border-radius: 14px;
+  font-size: 20px;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  margin-bottom: 20px;
+  animation: sim-pulse 1.5s ease-in-out infinite;
+
+  &--village { background: #c6f6d5; color: #276749; border: 4px solid #38a169; box-shadow: 4px 4px 0 #276749; }
+  &--chor    { background: #fed7d7; color: #c53030; border: 4px solid #e53e3e; box-shadow: 4px 4px 0 #c53030; }
+}
+
+@keyframes sim-pulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.015); }
+}
+
+.sim-body {
+  display: grid;
+  grid-template-columns: 1fr 310px;
+  gap: 18px;
+  align-items: start;
+}
+
+.sim-players {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.sim-card {
+  border: 3px solid $border-color;
+  border-radius: 14px;
+  padding: 18px 12px 14px;
+  text-align: center;
+  background: $background-color;
+  box-shadow: $shadow-sm;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.3s;
+
+  &:hover:not(.sim-card--dead) {
+    transform: translate(2px, 2px);
+    box-shadow: $shadow-pressed;
+  }
+
+  &--chor   { border-color: #e53e3e; background: #fff5f5; box-shadow: 3px 3px 0 #c53030; }
+  &--police { border-color: #3182ce; background: #ebf8ff; box-shadow: 3px 3px 0 #2b6cb0; }
+  &--daktar { border-color: #38a169; background: #f0fff4; box-shadow: 3px 3px 0 #276749; }
+
+  &--dead {
+    opacity: 0.42;
+    filter: grayscale(80%);
+    transform: none !important;
+    background: #edf2f7;
+    border-color: #a0aec0;
+    box-shadow: none !important;
+  }
+}
+
+.sim-card-avatar {
+  font-size: 30px;
+  margin-bottom: 8px;
+  line-height: 1;
+}
+
+.sim-card-name {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: $text-color;
+  margin-bottom: 3px;
+}
+
+.sim-card-role {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.65;
+  color: $text-color;
+}
+
+.sim-card-dead-label {
+  margin-top: 7px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #e53e3e;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sim-log {
+  border: 3px solid $border-color;
+  border-radius: 14px;
+  padding: 14px 14px 10px;
+  background: $background-color;
+  height: 370px;
+  overflow-y: auto;
+  box-shadow: $shadow-sm;
+
+  &::-webkit-scrollbar        { width: 6px; }
+  &::-webkit-scrollbar-track  { background: transparent; }
+  &::-webkit-scrollbar-thumb  {
+    background: $primary-color;
+    border-radius: 3px;
+    border: 1px solid $border-color;
+  }
+}
+
+.sim-log-header {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: $primary-color;
+  margin-bottom: 10px;
+  padding-bottom: 7px;
+  border-bottom: 2px solid $border-color;
+}
+
+.sim-log-line {
+  font-size: 12.5px;
+  line-height: 1.65;
+  padding: 1px 0;
+  font-family: 'Inter', sans-serif;
+  color: $text-color;
+
+  &--divider { color: $primary-color; font-weight: 700; margin: 5px 0 1px; }
+  &--phase   { font-weight: 600; }
+  &--death   { color: #c53030; font-weight: 600; }
+  &--elim    { color: #c53030; font-weight: 700; }
+  &--intel   { color: #b7791f; font-style: italic; }
+  &--win     { color: #276749; font-weight: 800; font-size: 14px; }
+  &--vote    { opacity: 0.75; }
+  &--setup   { opacity: 0.55; font-size: 11.5px; }
+  &--join    { opacity: 0.55; font-size: 11.5px; }
+  &--result  { color: #b7791f; font-weight: 600; }
+  &--resolve { opacity: 0.7; font-style: italic; }
+  &--error   { color: #c53030; font-weight: 700; }
+}
+
+.sim-announcements {
+  margin-top: 18px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sim-announcement {
+  flex: 1;
+  min-width: 180px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+
+  &--death { background: #fff5f5; border: 3px solid #fc8181; color: #c53030; box-shadow: 3px 3px 0 #e53e3e; }
+  &--elim  { background: #ebf8ff; border: 3px solid #63b3ed; color: #2b6cb0; box-shadow: 3px 3px 0 #3182ce; }
+}
+
+@media (max-width: 720px) {
+  .sim-body { grid-template-columns: 1fr; }
+  .sim-log  { height: 220px; }
+}
+
+@media (max-width: 420px) {
+  .sim-players { grid-template-columns: repeat(2, 1fr); }
 }

@@ -1,4 +1,8 @@
 export function getOrCreatePlayerId(): string {
+  // URL param ?pid=X lets simulation windows get a fixed identity
+  const urlPid = new URLSearchParams(window.location.search).get('pid')
+  if (urlPid) return urlPid
+
   const KEY = "cp_player_id";
   const existing = localStorage.getItem(KEY);
   if (existing) return existing;

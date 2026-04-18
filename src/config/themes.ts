@@ -5,6 +5,7 @@ export interface Theme {
   background: string;
   text: string;
   border: string;
+  shadow: string;
 }
 
 export const themes: Record<string, Theme> = {
@@ -14,7 +15,8 @@ export const themes: Record<string, Theme> = {
     tertiary: '#ff6b6b',
     background: '#f0f4ff',
     text: '#4a5568',
-    border: '#6b73ff'
+    border: '#6b73ff',
+    shadow: '#3b42cc',
   },
   chor: {
     primary: '#8B0000',
@@ -22,7 +24,8 @@ export const themes: Record<string, Theme> = {
     tertiary: '#FFD700',
     background: '#FFF5F5',
     text: '#2C1810',
-    border: '#8B0000'
+    border: '#8B0000',
+    shadow: '#5a0000',
   },
   daktar: {
     primary: '#006400',
@@ -30,7 +33,8 @@ export const themes: Record<string, Theme> = {
     tertiary: '#FF1493',
     background: '#F0FFF0',
     text: '#2F4F4F',
-    border: '#006400'
+    border: '#006400',
+    shadow: '#003d00',
   },
   police: {
     primary: '#000080',
@@ -38,7 +42,8 @@ export const themes: Record<string, Theme> = {
     tertiary: '#FF4500',
     background: '#F0F8FF',
     text: '#191970',
-    border: '#000080'
+    border: '#000080',
+    shadow: '#00004d',
   },
   babu: {
     primary: '#8B4513',
@@ -46,6 +51,7 @@ export const themes: Record<string, Theme> = {
     tertiary: '#FF69B4',
     background: '#FFF8DC',
     text: '#654321',
-    border: '#8B4513'
-  }
+    border: '#8B4513',
+    shadow: '#5a2d0c',
+  },
 };
