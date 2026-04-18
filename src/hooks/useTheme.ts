@@ -12,5 +12,6 @@ export function useTheme(currentTheme: string) {
     root.style.setProperty('--background-color', theme.background);
     root.style.setProperty('--text-color', theme.text);
     root.style.setProperty('--border-color', theme.border);
+    root.style.setProperty('--shadow-color', theme.shadow);
   }, [currentTheme]);
 }

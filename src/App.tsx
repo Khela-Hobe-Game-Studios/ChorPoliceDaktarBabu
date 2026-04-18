@@ -4,13 +4,13 @@ import { getOrCreatePlayerId } from './utils'
 import { createGame, joinGame, startGame, nextPhase } from './api/game'
 import { useTheme } from './hooks/useTheme'
 import { useGameState } from './hooks/useGameState'
-import { 
-  CreateGameBar, 
-  GameHeader, 
-  PlayerList, 
-  Announcements, 
-  Voting, 
-  NightActions, 
+import {
+  CreateGameBar,
+  GameHeader,
+  PlayerList,
+  Announcements,
+  Voting,
+  NightActions,
   ConfigureRoles,
   RoleDisplay,
   ThemeSelector
@@ -22,29 +22,38 @@ function App() {
   const [hasExplicitlyJoined, setHasExplicitlyJoined] = useState(false)
   const [showRole, setShowRole] = useState<boolean>(false)
   const [currentTheme, setCurrentTheme] = useState<string>('chor')
-  
+
   const playerId = useMemo(() => getOrCreatePlayerId(), [])
   const gameState = useGameState(gameCode, playerId)
 
-  // Apply theme to CSS custom properties
   useTheme(currentTheme)
 
-
   useEffect(() => {
-    const key = 'cp_show_role'
-    const val = localStorage.getItem(key)
+    const val = localStorage.getItem('cp_show_role')
     setShowRole(val === '1')
   }, [])
 
   useEffect(() => {
-    const key = 'cp_show_role'
-    localStorage.setItem(key, showRole ? '1' : '0')
+    localStorage.setItem('cp_show_role', showRole ? '1' : '0')
   }, [showRole])
+
+  // Auto-join when URL params ?pid=X&join=CODE&name=NAME are present (simulation mode)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const autoJoin = params.get('join')
+    const autoName = params.get('name')
+    if (autoJoin && autoName && !hasExplicitlyJoined) {
+      setGameCode(autoJoin)
+      setName(autoName)
+      joinGame(autoJoin, playerId, autoName)
+        .then(() => setHasExplicitlyJoined(true))
+        .catch(console.error)
+    }
+  }, [playerId])
 
   const handleCreate = async () => {
     const code = await createGame(playerId)
     setGameCode(code)
-    // Don't auto-join, let user click Join button
   }
 
   const handleJoin = async () => {
@@ -53,18 +62,7 @@ function App() {
     setHasExplicitlyJoined(true)
   }
 
-  const isHost = gameState.hostId === playerId
-  // Check if player has explicitly joined or is host viewing the game
-  const hasJoinedGame = gameCode && hasExplicitlyJoined && gameState.players[playerId]
-  // Show game interface if host (even if not joined as player)
-  const showGameInterface = hasJoinedGame || (gameCode && isHost)
-  // Exclude host from player count for game logic
-  const gamePlayers = Object.fromEntries(Object.entries(gameState.players).filter(([id]) => id !== gameState.hostId))
-  const totalPlayers = Object.keys(gamePlayers).length
-
-  const handleStartGame = async () => {
-    await startGame(gameCode)
-  }
+  const handleStartGame = async () => { await startGame(gameCode) }
 
   const handleResolveNight = async () => {
     const { resolveNight } = await import('./api/game')
@@ -76,16 +74,118 @@ function App() {
     await restartGame(gameCode)
   }
 
+  const isHost = gameState.hostId === playerId
+  const hasJoinedGame = gameCode && hasExplicitlyJoined && gameState.players[playerId]
+  const showGameInterface = hasJoinedGame || (gameCode && isHost)
+  const gamePlayers = Object.fromEntries(
+    Object.entries(gameState.players).filter(([id]) => id !== gameState.hostId)
+  )
+  const totalPlayers = Object.keys(gamePlayers).length
+
+  const phaseEmoji: Record<string, string> = { night: '🌙', day: '☀️', voting: '🗳️' }
+
+  // ── HOST DASHBOARD ─────────────────────────────────────────────────
+  if (showGameInterface && isHost) {
+    return (
+      <div className="host-root">
+        <div className="host-topbar">
+          <h2 className="host-topbar-title">Chor Police Daktar Babu</h2>
+
+          <div className="host-topbar-info">
+            <span className="host-topbar-code">🎮 {gameCode}</span>
+            {gameState.phase ? (
+              <span className={`host-phase-chip host-phase-chip--${gameState.phase}`}>
+                {phaseEmoji[gameState.phase]} {gameState.phase} · Round {gameState.round}
+              </span>
+            ) : (
+              <span className="host-phase-chip host-phase-chip--lobby">🏠 Lobby</span>
+            )}
+            <span className="host-player-count">
+              👥 {totalPlayers} player{totalPlayers !== 1 ? 's' : ''}
+            </span>
+          </div>
+
+          <ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} />
+        </div>
+
+        {gameState.gameEnded && gameState.phase && (
+          <div className={`host-winner-bar host-winner-bar--${gameState.winner}`}>
+            <span className="host-winner-text">
+              🎉 {gameState.winner === 'chor' ? 'Chor Wins! 🦹‍♂️' : 'Village Wins! 🏘️'}
+            </span>
+            <button className="btn host-restart-btn" onClick={handleRestartGame}>
+              Restart Game
+            </button>
+          </div>
+        )}
+
+        <div className="host-layout">
+          {/* ── Left: players + lobby config ── */}
+          <div className="host-panel">
+            <div className="host-panel-heading">👥 Players</div>
+            <PlayerList
+              players={gamePlayers}
+              lastInvestigation={gameState.lastInvestigation}
+              playerId={playerId}
+              myRole={gameState.myRole}
+            />
+            {!gameState.phase && (
+              <ConfigureRoles
+                roles={gameState.roles}
+                totalPlayers={totalPlayers}
+                onRolesChange={async (newRoles) => {
+                  const { updateRoleConfig } = await import('./api/game')
+                  await updateRoleConfig(gameCode, newRoles)
+                }}
+                onStartGame={handleStartGame}
+              />
+            )}
+          </div>
+
+          {/* ── Centre: game controls ── */}
+          <div className="host-panel host-panel--main">
+            <div className="host-panel-heading">⚙️ Game Controls</div>
+            <GameHeader
+              phase={gameState.phase}
+              round={gameState.round}
+              isHost={isHost}
+              gameEnded={gameState.gameEnded}
+              onNextPhase={() => nextPhase(gameCode)}
+              onResolveNight={handleResolveNight}
+            />
+            {gameState.phase === 'voting' && (
+              <Voting
+                gameCode={gameCode}
+                playerId={playerId}
+                livingPlayers={gamePlayers}
+                isHost={isHost}
+                canVote={gameState.myAlive}
+              />
+            )}
+          </div>
+
+          {/* ── Right: announcements feed ── */}
+          <div className="host-panel">
+            <div className="host-panel-heading">📢 Feed</div>
+            <Announcements
+              lastDeath={gameState.lastDeath}
+              lastElimination={gameState.lastElimination}
+              lastInvestigation={gameState.lastInvestigation}
+              players={gameState.players}
+              playerId={playerId}
+            />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // ── PLAYER MOBILE VIEW + LOBBY ──────────────────────────────────────
   return (
     <div className="app-container">
-      <h2>Chor Police Daktar Babu</h2>
-      {showGameInterface && (
-        <div className="game-code-display">
-          <div className="player-name-main">{name}</div>
-          {gameState.players[playerId]?.alive === false && <span className="eliminated-status"> (Eliminated)</span>}
-          <div className="game-code-subheader">Game Code: {gameCode}</div>
-        </div>
-      )}
+      {!showGameInterface && <h2>Chor Police Daktar Babu</h2>}
+
+      {/* Lobby */}
       {!showGameInterface && (
         <CreateGameBar
           name={name}
@@ -96,42 +196,51 @@ function App() {
           onJoin={handleJoin}
         />
       )}
+
+      {/* In-game player view */}
       {showGameInterface && (
         <>
+          <div className="game-code-display">
+            <div className="player-name-main">
+              {name}
+              {gameState.players[playerId]?.alive === false && (
+                <span className="eliminated-status"> (Eliminated)</span>
+              )}
+            </div>
+            <div className="game-code-subheader">Game Code: {gameCode}</div>
+          </div>
+
           <GameHeader
             phase={gameState.phase}
             round={gameState.round}
-            isHost={isHost}
+            isHost={false}
             gameEnded={gameState.gameEnded}
             onNextPhase={() => nextPhase(gameCode)}
             onResolveNight={handleResolveNight}
           />
+
           <RoleDisplay
             myRole={gameState.myRole}
             showRole={showRole}
-            onToggleShowRole={() => setShowRole((v) => !v)}
+            onToggleShowRole={() => setShowRole(v => !v)}
           />
-          <PlayerList 
-            players={gamePlayers} 
+
+          <PlayerList
+            players={gamePlayers}
             lastInvestigation={gameState.lastInvestigation}
             playerId={playerId}
             myRole={gameState.myRole}
           />
+
           {gameState.gameEnded && gameState.phase && (
             <div className="game-end-container">
-              <h3 className="game-end-title">
-                🎉 Game Ended! 🎉
-              </h3>
+              <h3 className="game-end-title">🎉 Game Ended! 🎉</h3>
               <div className="game-end-winner">
                 {gameState.winner === 'chor' ? 'Chor Wins! 🦹‍♂️' : 'Village Wins! 🏘️'}
               </div>
-              {isHost && (
-                <button className="btn restart-game-btn" onClick={handleRestartGame}>
-                  Restart Game
-                </button>
-              )}
             </div>
           )}
+
           <Announcements
             lastDeath={gameState.lastDeath}
             lastElimination={gameState.lastElimination}
@@ -139,15 +248,17 @@ function App() {
             players={gameState.players}
             playerId={playerId}
           />
+
           {gameState.phase === 'voting' && (
             <Voting
               gameCode={gameCode}
               playerId={playerId}
               livingPlayers={gamePlayers}
-              isHost={isHost}
+              isHost={false}
               canVote={gameState.myAlive}
             />
           )}
+
           {gameState.phase === 'night' && gameState.myRole && (
             <NightActions
               myRole={gameState.myRole}
@@ -157,25 +268,10 @@ function App() {
               canAct={gameState.myAlive}
             />
           )}
-          {isHost && !gameState.phase && (
-            <ConfigureRoles
-              roles={gameState.roles}
-              totalPlayers={totalPlayers}
-              onRolesChange={async (newRoles) => {
-                console.log('Updating roles:', newRoles);
-                const { updateRoleConfig } = await import('./api/game');
-                await updateRoleConfig(gameCode, newRoles);
-                console.log('Roles updated successfully');
-              }}
-              onStartGame={handleStartGame}
-            />
-          )}
         </>
       )}
-      <ThemeSelector
-        currentTheme={currentTheme}
-        onThemeChange={setCurrentTheme}
-      />
+
+      <ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} />
     </div>
   )
 }
