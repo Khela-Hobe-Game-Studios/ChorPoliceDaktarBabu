@@ -1,7 +1,7 @@
+import './styles/simulation.scss'
 import { useEffect, useRef, useState } from 'react'
 import { ref, update, onValue } from 'firebase/database'
 import { db } from './firebase'
-import './styles/components.scss'
 import {
   createGame, joinGame, updateRoleConfig, startGame,
   setNightAction, setVote, resolveNight, finalizeVote, nextPhase, checkWinCondition
@@ -19,37 +19,161 @@ const SIM_PLAYERS = [
 ]
 
 const ROLE_EMOJI: Record<string, string> = {
-  police: '👮',
-  chor:   '🔪',
-  daktar: '💊',
-  babu:   '👤',
+  police: '👮', chor: '🦹', daktar: '💊', babu: '👤',
 }
-
 const ROLE_LABEL: Record<string, string> = {
-  police: 'Police',
-  chor:   'Chor',
-  daktar: 'Daktar',
-  babu:   'Babu',
+  police: 'Police', chor: 'Chor', daktar: 'Daktar', babu: 'Babu',
+}
+const ROLE_ACTION: Record<string, string> = {
+  police: 'Investigate a player',
+  chor:   'Choose a target to eliminate',
+  daktar: 'Choose a player to save',
+  babu:   '',
 }
 
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms))
 
-type LogEntry = { text: string; type: string }
+// 4 panes: skip Eve (5th player) since 2×2 = 4 slots
+const PANE_PLAYERS = SIM_PLAYERS.slice(0, 4)
+
+interface PanePlayer { id: string; name: string; role: string; alive: boolean }
+
+interface PlayerPaneProps {
+  pane: PanePlayer
+  allPlayers: PanePlayer[]
+  gameCode: string | null
+  phase: string | null
+  round: number | null
+  gameSnap: any
+  winner: string | null
+}
+
+function PlayerPane({ pane, allPlayers, gameCode, phase, round, gameSnap, winner }: PlayerPaneProps) {
+  const otherPlayers = allPlayers.filter(p => p.id !== pane.id)
+  const playerData   = gameSnap?.players?.[pane.id]
+  const nightAction  = playerData?.nightAction
+  const vote         = playerData?.vote
+  const investigation: { policeId: string; targetId: string; isChor: boolean } | null =
+    gameSnap?.results?.lastInvestigation ?? null
+
+  const phaseLabel: Record<string, string> = {
+    night: '🌙 Night', day: '☀️ Day', voting: '🗳️ Voting',
+  }
+
+  return (
+    <div className={`sim-pane sim-pane--${pane.role}${!pane.alive ? ' sim-pane--eliminated' : ''}`}>
+      {/* Header */}
+      <div className="sim-pane-header">
+        <span className="sim-pane-name">
+          {pane.name}
+          {!pane.alive && <span className="sim-pane-elim-tag"> · Eliminated</span>}
+        </span>
+        <span className="sim-pane-gamecode">{gameCode ?? '…'}</span>
+      </div>
+
+      {/* Phase + round */}
+      {phase && (
+        <div className="sim-pane-phase-row">
+          <span className={`sim-pane-phase-chip sim-pane-phase-chip--${phase}`}>
+            {phaseLabel[phase] ?? phase}
+          </span>
+          {round != null && round > 0 && (
+            <span className="sim-pane-round">Round {round}</span>
+          )}
+        </div>
+      )}
+
+      {/* Role block */}
+      <div className="sim-pane-role-block">
+        <span className="sim-pane-role-emoji">{ROLE_EMOJI[pane.role]}</span>
+        <div>
+          <div className="sim-pane-role-eyebrow">Your Role</div>
+          <div className="sim-pane-role-name">{ROLE_LABEL[pane.role]}</div>
+        </div>
+      </div>
+
+      {/* Player list */}
+      <div className="sim-pane-section-label">Players</div>
+      <ul className="sim-pane-players">
+        {otherPlayers.map(p => {
+          const isIdentifiedChor =
+            pane.role === 'police' &&
+            investigation?.policeId === pane.id &&
+            investigation?.targetId === p.id &&
+            investigation?.isChor
+          return (
+            <li
+              key={p.id}
+              className={[
+                'sim-pane-player',
+                !p.alive            ? 'sim-pane-player--dead'       : '',
+                isIdentifiedChor    ? 'sim-pane-player--chor-intel'  : '',
+              ].filter(Boolean).join(' ')}
+            >
+              <span className="sim-pane-player-icon">{p.alive ? '👤' : '💀'}</span>
+              <span className="sim-pane-player-name">{p.name}</span>
+              {isIdentifiedChor && <span className="sim-pane-intel">🚨 Chor</span>}
+            </li>
+          )
+        })}
+      </ul>
+
+      {/* Action area — pushed to bottom */}
+      <div className="sim-pane-action-area">
+        {phase === 'night' && pane.alive && (
+          <>
+            {ROLE_ACTION[pane.role] && (
+              <div className="sim-pane-action-label">{ROLE_ACTION[pane.role]}</div>
+            )}
+            {pane.role === 'babu' ? (
+              <div className="sim-pane-action-waiting">😴 No night action</div>
+            ) : nightAction ? (
+              <div className="sim-pane-action-done">
+                ✓ Action submitted
+                {nightAction.target && (
+                  <span className="sim-pane-action-target">
+                    {' '}→ {allPlayers.find(p => p.id === nightAction.target)?.name ?? nightAction.target}
+                  </span>
+                )}
+              </div>
+            ) : (
+              <div className="sim-pane-action-waiting">Waiting to act…</div>
+            )}
+          </>
+        )}
+
+        {phase === 'voting' && pane.alive && (
+          <>
+            <div className="sim-pane-action-label">Vote to eliminate</div>
+            {vote ? (
+              <div className="sim-pane-action-done">
+                ✓ Voted for
+                <span className="sim-pane-action-target">
+                  {' '}{allPlayers.find(p => p.id === vote)?.name ?? vote}
+                </span>
+              </div>
+            ) : (
+              <div className="sim-pane-action-waiting">Waiting to vote…</div>
+            )}
+          </>
+        )}
+
+        {winner && (
+          <div className={`sim-pane-winner sim-pane-winner--${winner}`}>
+            {winner === 'village' ? '🏆 Village Wins!' : '🦹 Chor Wins!'}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 export default function SimulationView() {
   const [gameCode, setGameCode] = useState<string | null>(null)
-  const [log, setLog] = useState<LogEntry[]>([])
   const [gameSnap, setGameSnap] = useState<any>(null)
   const started = useRef(false)
-  const logRef = useRef<HTMLDivElement>(null)
-
-  const addLog = (text: string, type = 'info') =>
-    setLog(prev => [...prev, { text, type }])
-
-  useEffect(() => {
-    if (logRef.current)
-      logRef.current.scrollTop = logRef.current.scrollHeight
-  }, [log])
 
   useEffect(() => {
     if (!gameCode) return
@@ -65,113 +189,52 @@ export default function SimulationView() {
 
     async function run() {
       try {
-        addLog('Creating game...', 'setup')
         const code = await createGame(HOST_ID)
         setGameCode(code)
-        addLog(`Game created: ${code}`, 'setup')
         await updateRoleConfig(code, { chor: 1, daktar: 1, police: 1, babu: 2 })
         await delay(300)
 
         for (const p of SIM_PLAYERS) {
           await joinGame(code, p.id, p.name)
-          addLog(`${p.name} joined`, 'join')
           await delay(200)
         }
 
         await delay(500)
-        addLog('Starting game...', 'setup')
         await startGame(code)
-
-        // Force predetermined roles (override random assignment)
         const roleWrites: Record<string, string> = {}
         for (const p of SIM_PLAYERS)
           roleWrites[`games/${code}/players/${p.id}/role`] = p.role
         await update(ref(db), roleWrites)
-        addLog('Roles assigned!', 'setup')
         await delay(1200)
 
-        // ── ROUND 1 ────────────────────────────
-        addLog('── ROUND 1 ────────────────', 'divider')
-        addLog('🌙 Night begins...', 'phase')
+        // ── Round 1 ──────────────────────────────────
         await delay(600)
+        await setNightAction(code, 'sim_p2', { type: 'chor',   target: 'sim_p3' }); await delay(700)
+        await setNightAction(code, 'sim_p3', { type: 'daktar', target: 'sim_p1' }); await delay(700)
+        await setNightAction(code, 'sim_p1', { type: 'police', target: 'sim_p2' }); await delay(900)
+        await resolveNight(code); await delay(2000)
 
-        addLog('Bob sneaks out to choose a target...', 'action')
-        await setNightAction(code, 'sim_p2', { type: 'chor', target: 'sim_p3' })
-        await delay(700)
+        await nextPhase(code); await delay(500)
+        await setVote(code, 'sim_p1', 'sim_p2'); await delay(350)
+        await setVote(code, 'sim_p2', 'sim_p1'); await delay(350)
+        await setVote(code, 'sim_p4', 'sim_p1'); await delay(350)
+        await setVote(code, 'sim_p5', 'sim_p2'); await delay(500)
+        await finalizeVote(code); await delay(1400)
 
-        addLog('Charlie tries to protect Alice tonight...', 'action')
-        await setNightAction(code, 'sim_p3', { type: 'daktar', target: 'sim_p1' })
-        await delay(700)
-
-        addLog('Alice secretly investigates Bob...', 'action')
-        await setNightAction(code, 'sim_p1', { type: 'police', target: 'sim_p2' })
-        await delay(900)
-
-        addLog('⚡ Resolving night actions...', 'resolve')
-        await resolveNight(code) // Charlie dies (saved Alice, not himself); phase → day
-        await delay(400)
-
-        addLog('☀️ Morning — Charlie was killed!', 'death')
-        addLog('   (Alice\'s intel: Bob IS the Chor! 🚨)', 'intel')
-        await delay(2000)
-
-        addLog('🗳️ Village votes...', 'phase')
-        await nextPhase(code) // day → voting
-        await delay(500)
-
-        await setVote(code, 'sim_p1', 'sim_p2'); addLog('   Alice  →  Bob',   'vote')
-        await delay(350)
-        await setVote(code, 'sim_p2', 'sim_p1'); addLog('   Bob    →  Alice', 'vote')
-        await delay(350)
-        await setVote(code, 'sim_p4', 'sim_p1'); addLog('   Diana  →  Alice', 'vote')
-        await delay(350)
-        await setVote(code, 'sim_p5', 'sim_p2'); addLog('   Eve    →  Bob',   'vote')
-        await delay(500)
-
-        await finalizeVote(code) // 2–2 tie → no elimination; phase → night, round 2
-        addLog('   TIE! No one eliminated.', 'result')
-        await delay(1400)
-
-        // ── ROUND 2 ────────────────────────────
-        addLog('── ROUND 2 ────────────────', 'divider')
-        addLog('🌙 Night begins...', 'phase')
+        // ── Round 2 ──────────────────────────────────
         await delay(600)
+        await setNightAction(code, 'sim_p2', { type: 'chor',   target: 'sim_p1' }); await delay(700)
+        await setNightAction(code, 'sim_p1', { type: 'police', target: 'sim_p5' }); await delay(900)
+        await resolveNight(code); await delay(2000)
 
-        addLog('Bob targets Alice this time...', 'action')
-        await setNightAction(code, 'sim_p2', { type: 'chor', target: 'sim_p1' })
-        await delay(700)
-
-        addLog('Alice runs one last investigation...', 'action')
-        await setNightAction(code, 'sim_p1', { type: 'police', target: 'sim_p5' })
-        await delay(900)
-
-        addLog('⚡ Resolving night actions...', 'resolve')
-        await resolveNight(code) // Alice dies; phase → day
-        await delay(400)
-
-        addLog('☀️ Morning — Alice was killed!', 'death')
-        await delay(2000)
-
-        addLog('🗳️ Final vote — Diana and Eve have had enough...', 'phase')
-        await nextPhase(code) // day → voting
-        await delay(500)
-
-        await setVote(code, 'sim_p4', 'sim_p2'); addLog('   Diana  →  Bob',   'vote')
-        await delay(350)
-        await setVote(code, 'sim_p5', 'sim_p2'); addLog('   Eve    →  Bob',   'vote')
-        await delay(350)
-        await setVote(code, 'sim_p2', 'sim_p4'); addLog('   Bob    →  Diana', 'vote')
-        await delay(500)
-
-        await finalizeVote(code) // Bob out 2/3 → win condition triggers
-        addLog('   BOB ELIMINATED — Bob was the Chor! 🎉', 'elim')
-        await delay(600)
-
-        addLog('──────────────────────────', 'divider')
-        addLog('🏆 VILLAGE WINS!', 'win')
+        await nextPhase(code); await delay(500)
+        await setVote(code, 'sim_p4', 'sim_p2'); await delay(350)
+        await setVote(code, 'sim_p5', 'sim_p2'); await delay(350)
+        await setVote(code, 'sim_p2', 'sim_p4'); await delay(500)
+        await finalizeVote(code)
 
       } catch (err: any) {
-        addLog(`Error: ${err.message}`, 'error')
+        console.error('Sim error:', err)
       }
     }
 
@@ -179,97 +242,56 @@ export default function SimulationView() {
   }, [])
 
   const players = (gameSnap?.players ?? {}) as Record<string, PlayerState & { role: string }>
-  const phase    = gameSnap?.phase as string | null
-  const round    = gameSnap?.round as number | null
-  const results  = gameSnap?.results as any
-  const winner   = gameSnap ? checkWinCondition(players) : null
+  const phase   = gameSnap?.phase  as string | null
+  const round   = gameSnap?.round  as number | null
+  const winner  = gameSnap ? checkWinCondition(players) : null
 
-  const cards = SIM_PLAYERS.map(sp => ({
+  const allPlayers: PanePlayer[] = SIM_PLAYERS.map(sp => ({
     ...sp,
     alive: players[sp.id]?.alive !== false,
     role:  players[sp.id]?.role || sp.role,
   }))
 
+  const panes = allPlayers.slice(0, 4)
+
   const phaseLabel: Record<string, string> = {
-    night:  '🌙 Night',
-    day:    '☀️ Day',
-    voting: '🗳️ Voting',
+    night: '🌙 Night', day: '☀️ Day', voting: '🗳️ Voting',
   }
 
   return (
-    <div className="sim-root">
-      <div className="sim-header">
-        <h1 className="sim-title">Chor Police Daktar Babu</h1>
-        <p className="sim-subtitle">5-Player Simulation — Spectator View</p>
-        {gameCode && (
-          <div className="sim-meta">
-            <span className="sim-meta-item">Code: <strong>{gameCode}</strong></span>
-            {round != null && round > 0 && (
-              <span className="sim-meta-item">Round <strong>{round}</strong></span>
-            )}
-            {phase && (
-              <span className={`sim-phase-badge sim-phase-badge--${phase}`}>
-                {phaseLabel[phase] ?? phase}
-              </span>
-            )}
-          </div>
+    <div className="sim-split-root">
+      <div className="sim-split-bar">
+        <span className="sim-split-bar-title">Chor Police Daktar Babu</span>
+        {gameCode && <span className="sim-split-bar-code">{gameCode}</span>}
+        {phase && (
+          <span className={`sim-phase-badge sim-phase-badge--${phase}`}>
+            {phaseLabel[phase]}
+          </span>
+        )}
+        {round != null && round > 0 && (
+          <span className="sim-split-bar-info">Round {round}</span>
+        )}
+        {winner && (
+          <span className={`sim-split-bar-winner sim-split-bar-winner--${winner}`}>
+            {winner === 'village' ? '🏆 Village Wins!' : '🦹 Chor Wins!'}
+          </span>
         )}
       </div>
 
-      {winner && (
-        <div className={`sim-winner-banner sim-winner-banner--${winner}`}>
-          {winner === 'village'
-            ? '🏆 Village Wins! The Chor has been caught.'
-            : '🦹 Chor Wins! The village is lost.'}
-        </div>
-      )}
-
-      <div className="sim-body">
-        <div className="sim-players">
-          {cards.map(card => (
-            <div
-              key={card.id}
-              className={`sim-card sim-card--${card.role}${card.alive ? '' : ' sim-card--dead'}`}
-            >
-              <div className="sim-card-avatar">
-                {card.alive ? ROLE_EMOJI[card.role] : '💀'}
-              </div>
-              <div className="sim-card-name">{card.name}</div>
-              <div className="sim-card-role">{ROLE_LABEL[card.role] ?? card.role}</div>
-              {!card.alive && <div className="sim-card-dead-label">Eliminated</div>}
-            </div>
-          ))}
-        </div>
-
-        <div className="sim-log" ref={logRef}>
-          <div className="sim-log-header">Simulation Log</div>
-          {log.map((entry, i) => (
-            <div key={i} className={`sim-log-line sim-log-line--${entry.type}`}>
-              {entry.text}
-            </div>
-          ))}
-          {log.length === 0 && (
-            <div className="sim-log-line sim-log-line--setup">Initialising...</div>
-          )}
-        </div>
+      <div className="sim-split-grid">
+        {panes.map(pane => (
+          <PlayerPane
+            key={pane.id}
+            pane={pane}
+            allPlayers={allPlayers}
+            gameCode={gameCode}
+            phase={phase}
+            round={round}
+            gameSnap={gameSnap}
+            winner={winner}
+          />
+        ))}
       </div>
-
-      {(results?.lastDeath || results?.lastElimination) && (
-        <div className="sim-announcements">
-          {results.lastDeath && (
-            <div className="sim-announcement sim-announcement--death">
-              ☠️ Killed last night:{' '}
-              <strong>{players[results.lastDeath]?.name ?? results.lastDeath}</strong>
-            </div>
-          )}
-          {results.lastElimination && (
-            <div className="sim-announcement sim-announcement--elim">
-              🗳️ Voted out:{' '}
-              <strong>{players[results.lastElimination]?.name ?? results.lastElimination}</strong>
-            </div>
-          )}
-        </div>
-      )}
     </div>
   )
 }

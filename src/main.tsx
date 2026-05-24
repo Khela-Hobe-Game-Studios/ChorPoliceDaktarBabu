@@ -1,5 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import '@khelahobe/kui/styles'
+import './styles/layout.scss'
 import './index.css'
 import App from './App.tsx'
 import SimulationView from './SimulationView.tsx'

@@ -1,29 +1,39 @@
-interface GameHeaderProps {
-  phase: string | null;
-  round: number;
-  isHost: boolean;
-  gameEnded: boolean;
-  onNextPhase: () => void;
-  onResolveNight: () => void;
+import { Badge, Button } from '@khelahobe/kui'
+
+type PhaseBadgeVariant = 'default' | 'night' | 'day' | 'voting' | 'lobby'
+
+const PHASE_VARIANT: Record<string, PhaseBadgeVariant> = {
+  lobby: 'lobby', night: 'night', day: 'day', voting: 'voting', results: 'default',
 }
 
-export function GameHeader(props: GameHeaderProps) {
-  const { phase, round, isHost, gameEnded, onNextPhase, onResolveNight } = props;
+interface GameHeaderProps {
+  phase: string | null
+  round: number
+  isHost: boolean
+  gameEnded: boolean
+  onNextPhase: () => void
+  onResolveNight: () => void
+}
 
+export function GameHeader({ phase, round, isHost, gameEnded, onNextPhase, onResolveNight }: GameHeaderProps) {
   return (
-    <div className="game-header">
-      <h3 className="game-header-title">Game Status</h3>
-      {phase && <div className="phase-info">Phase: <strong>{phase}</strong> · Round: <strong>{round}</strong></div>}
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+      {phase && (
+        <Badge
+          variant={PHASE_VARIANT[phase] ?? 'default'}
+          pulse={phase === 'night' || phase === 'voting'}
+        >
+          {phase.charAt(0).toUpperCase() + phase.slice(1)} · Round {round}
+        </Badge>
+      )}
       {isHost && phase && !gameEnded && (
-        <div className="host-controls">
-          <button className="btn" onClick={onNextPhase}>Next Phase</button>
+        <>
+          <Button size="sm" variant="primary" onClick={onNextPhase}>Next Phase</Button>
           {phase === 'night' && (
-            <button className="btn resolve-night-btn" onClick={onResolveNight}>
-              Resolve Night
-            </button>
+            <Button size="sm" variant="secondary" onClick={onResolveNight}>Resolve Night</Button>
           )}
-        </div>
+        </>
       )}
     </div>
-  );
+  )
 }
