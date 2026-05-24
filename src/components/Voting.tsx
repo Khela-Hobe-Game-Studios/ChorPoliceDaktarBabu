@@ -1,47 +1,56 @@
-import { useState } from 'react';
+import { useState } from 'react'
+import { Select, Button } from '@khelahobe/kui'
 
 interface VotingProps {
-  gameCode: string;
-  playerId: string;
-  livingPlayers: Record<string, { name: string; alive?: boolean }>;
-  isHost: boolean;
-  canVote: boolean;
+  gameCode: string
+  playerId: string
+  livingPlayers: Record<string, { name: string; alive?: boolean }>
+  isHost: boolean
+  canVote: boolean
 }
 
-export function Voting(props: VotingProps) {
-  const { gameCode, playerId, livingPlayers, isHost, canVote } = props;
-  const [target, setTarget] = useState<string>("");
-  const [voteSubmitted, setVoteSubmitted] = useState<boolean>(false);
-  const others = Object.fromEntries(Object.entries(livingPlayers).filter(([id]) => id !== playerId));
-  
+export function Voting({ gameCode, playerId, livingPlayers, isHost, canVote }: VotingProps) {
+  const [target, setTarget] = useState('')
+  const [voteSubmitted, setVoteSubmitted] = useState(false)
+
+  const options = Object.entries(livingPlayers)
+    .filter(([id, p]) => id !== playerId && p.alive !== false)
+    .map(([id, p]) => ({ value: id, label: p.name }))
+
   return (
-    <div className="voting-container">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
       {!isHost && (
         <>
-          <h4 className="voting-title">Voting</h4>
-          <div className="voting-controls">
-            <select className="select" value={target} onChange={(e) => setTarget(e.target.value)} disabled={!canVote}>
-              <option value="">-- Vote for --</option>
-              {Object.entries(others).filter(([, p]) => p.alive !== false).map(([id, p]) => (
-                <option key={id} value={id}>{p.name}</option>
-              ))}
-            </select>
-            <button className="btn submit-vote-btn" disabled={!target || !canVote || voteSubmitted} onClick={async () => {
-              const { setVote } = await import('../api/game');
-              await setVote(gameCode, playerId, target);
-              setVoteSubmitted(true);
-            }}>
-              {voteSubmitted ? '✅ Vote Submitted' : 'Submit Vote'}
-            </button>
-          </div>
+          <Select
+            options={[{ value: '', label: '-- Vote for --' }, ...options]}
+            value={target}
+            onChange={e => setTarget(e.target.value)}
+            disabled={!canVote}
+          />
+          <Button
+            variant="primary"
+            disabled={!target || !canVote || voteSubmitted}
+            onClick={async () => {
+              const { setVote } = await import('../api/game')
+              await setVote(gameCode, playerId, target)
+              setVoteSubmitted(true)
+            }}
+          >
+            {voteSubmitted ? '✅ Vote Submitted' : 'Submit Vote'}
+          </Button>
         </>
       )}
       {isHost && (
-        <button className="btn finalize-btn" onClick={async () => {
-          const { finalizeVote } = await import('../api/game');
-          await finalizeVote(gameCode);
-        }}>Finalize Vote</button>
+        <Button
+          variant="secondary"
+          onClick={async () => {
+            const { finalizeVote } = await import('../api/game')
+            await finalizeVote(gameCode)
+          }}
+        >
+          Finalize Vote
+        </Button>
       )}
     </div>
-  );
+  )
 }

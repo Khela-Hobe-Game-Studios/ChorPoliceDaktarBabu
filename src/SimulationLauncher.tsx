@@ -1,7 +1,7 @@
+import './styles/simulation.scss'
 import { useEffect, useRef, useState } from 'react'
 import { ref, update, get, child } from 'firebase/database'
 import { db } from './firebase'
-import './styles/components.scss'
 import {
   createGame, updateRoleConfig, startGame,
   setNightAction, setVote, resolveNight, finalizeVote, nextPhase
